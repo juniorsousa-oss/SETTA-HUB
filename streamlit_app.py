@@ -340,7 +340,7 @@ html,body,[data-testid="stAppViewContainer"]{min-height:100%}
 
 header[data-testid="stHeader"]{
   background:var(--y)!important;
-  height:68px!important;
+  height:64px!important;
   border-bottom:1px solid rgba(0,0,0,.06)!important;
   z-index:100000!important;
 }
@@ -354,7 +354,7 @@ header[data-testid="stHeader"] *{color:var(--ink)!important}
 .hub-header-content{
   position:fixed;
   top:0;left:0;right:0;
-  height:68px;
+  height:64px;
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -364,159 +364,126 @@ header[data-testid="stHeader"] *{color:var(--ink)!important}
 }
 
 .page-root{
-  padding-top:68px;
+  padding-top:64px;
   min-height:100dvh;
   display:flex;
   flex-direction:column;
 }
 
-.brand-slot{width:180px;height:58px;display:flex;align-items:center;overflow:hidden}
-.brand-text{color:var(--ink);font-size:clamp(35px,2.35vw,43px);font-style:italic;font-weight:900;letter-spacing:-3px}
-.brand-logo{width:180px;height:54px;max-width:180px;max-height:54px;object-fit:contain;object-position:left center}
+.brand-slot{width:170px;height:50px;display:flex;align-items:center;overflow:hidden}
+.brand-text{color:var(--ink);font-size:clamp(34px,2.2vw,40px);font-style:italic;font-weight:900;letter-spacing:-3px}
+.brand-logo{width:170px;height:48px;max-width:170px;max-height:48px;object-fit:contain;object-position:left center}
 .user{color:var(--ink);font-size:clamp(13px,.85vw,15px);font-weight:700;display:flex;gap:10px;align-items:center;white-space:nowrap}
-.user-badge{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#fff;border:1px solid rgba(30,35,46,.2)}
+.user-badge{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#fff;border:1px solid rgba(30,35,46,.2)}
 
 .hero{
   display:grid;
-  grid-template-columns:minmax(0,1.02fr) minmax(0,1fr);
-  min-height:clamp(205px,24vh,255px);
+  grid-template-columns:minmax(0,.95fr) minmax(420px,1.05fr);
+  gap:clamp(24px,2.2vw,40px);
+  padding:clamp(22px,2.4vw,34px) var(--page-pad) clamp(16px,1.8vw,26px);
   background:#fff;
-  overflow:hidden;
-}
-.hero-copy{
-  padding:clamp(38px,4vw,62px) var(--page-pad) clamp(32px,3vw,44px);
-  z-index:2;
-  background:linear-gradient(120deg,#fff 0%,#fff 72%,rgba(255,255,255,.92) 78%,rgba(255,255,255,0) 79%);
-}
-.hero h1{margin:0;color:var(--ink);font-size:clamp(34px,2.6vw,48px);line-height:1.03;letter-spacing:-2px;font-weight:900}
-.hero h2{margin:8px 0 0;color:#66728B;font-size:clamp(20px,1.55vw,27px);line-height:1.2;font-weight:500}
-.hero p{margin:clamp(14px,1.25vw,20px) 0 0;color:#73809B;font-size:clamp(13px,.92vw,16px);line-height:1.55;max-width:620px}
-.hero-image{min-height:clamp(205px,24vh,255px);background-size:cover;background-position:center;position:relative}
-.hero-slogan{position:absolute;right:7%;top:clamp(24px,3vw,38px);color:#60708F;font-size:clamp(10px,.7vw,12px);letter-spacing:4px;line-height:1.7;font-weight:700}
-.hero-slogan:after{content:"";display:block;width:42px;height:3px;background:var(--y2);margin-top:8px}
-
-.apps-wrap{
-  width:100%;
-  padding:clamp(8px,1vw,14px) var(--page-pad) clamp(22px,2vw,32px);
-  margin-top:clamp(-12px,-.65vw,-6px);
-  position:relative;
-  z-index:5;
-  flex:1 0 auto;
-}
-.apps-grid{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:clamp(14px,1.1vw,22px);
-}
-.app-card{
-  min-height:clamp(182px,22vh,220px);
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-  text-decoration:none!important;
-  color:inherit!important;
-  background:radial-gradient(circle at 108% 110%,rgba(253,195,59,.16) 0 27%,transparent 28%),#fff;
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:clamp(20px,1.45vw,26px) clamp(22px,1.7vw,32px);
-  box-shadow:0 8px 24px rgba(44,62,92,.06);
-  transition:.18s;
-}
-.app-card:hover{transform:translateY(-4px);box-shadow:0 16px 34px rgba(44,62,92,.12)}
-.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
-.app-icon{width:72px;height:72px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:#FFF7E2;overflow:hidden;flex:0 0 72px}
-.app-icon img{width:56px;height:56px;object-fit:contain}
-.app-icon-emoji{font-size:34px}
-.status{display:flex;align-items:center;gap:7px;background:#E9F9EF;color:#15883F;font-size:clamp(11px,.75vw,13px);font-weight:700;border-radius:999px;padding:7px 12px;white-space:nowrap}
-.dot{width:10px;height:10px;border-radius:50%;background:var(--green);flex:0 0 10px}
-.app-title{margin-top:10px;color:#101738;font-weight:900;font-size:clamp(20px,1.3vw,24px);line-height:1.16}
-.app-desc{margin-top:5px;color:#77839B;font-size:clamp(13px,.85vw,15px);line-height:1.4}
-.access{margin-top:18px;color:#F1A000;font-size:clamp(14px,.9vw,16px);font-weight:800;display:flex;gap:10px}
-
-.page-footer{
-  min-height:52px;
-  border-top:1px solid var(--line);
-  display:flex;
   align-items:center;
-  justify-content:space-between;
-  padding:0 var(--page-pad);
-  background:#fff;
-  color:#97A2B8;
-  font-size:clamp(9px,.65vw,11px);
-  letter-spacing:2px;
-  text-transform:uppercase;
-  margin-top:auto;
 }
-.footer-brand{display:flex;align-items:center;gap:12px;min-width:0}
-.footer-logo-slot{width:72px;height:30px;display:flex;align-items:center;flex:0 0 72px}
-.footer-brand-text{color:var(--ink);font-size:21px;font-style:italic;font-weight:900}
-.footer-logo{width:72px;height:30px;object-fit:contain}
-.footer-line{width:32px;height:3px;background:var(--y2);display:inline-block;margin-left:10px}
+.hero-copy{padding:0;background:transparent;align-self:center}
+.hero-eyebrow{margin-bottom:8px;color:#73809B;font-size:clamp(10px,.66vw,12px);font-weight:800;letter-spacing:4px;text-transform:uppercase}
+.hero h1{margin:0;color:var(--ink);font-size:clamp(34px,2.55vw,46px);line-height:1.02;letter-spacing:-2px;font-weight:900}
+.hero h2{margin:7px 0 0;color:#66728B;font-size:clamp(19px,1.42vw,25px);line-height:1.2;font-weight:500}
+.hero p{margin:clamp(12px,1vw,16px) 0 0;color:#73809B;font-size:clamp(12px,.84vw,14px);line-height:1.55;max-width:560px}
+.hero-accent{width:64px;height:4px;background:var(--y2);border-radius:10px;margin-top:16px}
+.hero-image{height:clamp(185px,21vh,225px);min-height:185px;background-size:cover;background-position:center 48%;position:relative;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(27,41,68,.08)}
+.hero-image:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 48%,rgba(9,21,45,.08) 100%);pointer-events:none}
+.hero-slogan{position:absolute;right:5%;bottom:18px;max-width:190px;color:white;text-shadow:0 1px 8px rgba(0,0,0,.35);font-size:clamp(11px,.75vw,13px);letter-spacing:1px;line-height:1.25;font-weight:800;z-index:2}
+.hero-slogan:after{content:"";display:block;width:34px;height:3px;background:var(--y2);margin-top:9px;border-radius:8px}
+
+.apps-wrap{width:100%;padding:clamp(8px,.8vw,12px) var(--page-pad) clamp(14px,1.3vw,22px);position:relative;z-index:5;flex:1 0 auto}
+.apps-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1vw,18px)}
+.app-card{position:relative;min-height:150px;display:flex;flex-direction:column;justify-content:space-between;text-decoration:none!important;color:inherit!important;background:radial-gradient(circle at 108% 112%,rgba(253,195,59,.13) 0 28%,transparent 29%),#fff;border:1px solid var(--line);border-radius:15px;padding:20px 22px 17px;box-shadow:0 6px 18px rgba(44,62,92,.045);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.app-card:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(44,62,92,.10);border-color:#D9DEE7}
+.card-content{display:grid;grid-template-columns:64px minmax(0,1fr);gap:16px;align-items:start;padding-right:90px}
+.app-icon{width:64px;height:64px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:#FFF7E2;overflow:hidden;flex:0 0 64px}
+.app-icon img{width:50px;height:50px;object-fit:contain}
+.app-icon-emoji{font-size:32px}
+.card-copy{min-width:0;padding-top:4px}
+.status{position:absolute;top:18px;right:20px;display:flex;align-items:center;gap:7px;background:#E9F9EF;color:#15883F;font-size:clamp(10px,.7vw,12px);font-weight:700;border-radius:999px;padding:6px 10px;white-space:nowrap}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--green);flex:0 0 9px}
+.app-title{color:#111A36;font-weight:900;font-size:clamp(18px,1.08vw,21px);line-height:1.16}
+.app-desc{margin-top:5px;color:#71809B;font-size:clamp(12px,.78vw,14px);line-height:1.35;max-width:95%}
+.access{margin-top:14px;color:#F1A000;font-size:clamp(13px,.82vw,15px);font-weight:800;display:flex;align-items:center;gap:8px}
+.access-arrow{font-size:18px;line-height:1;transition:transform .18s ease}
+.app-card:hover .access-arrow{transform:translateX(3px)}
+
+.page-footer{min-height:40px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 var(--page-pad);background:#fff;color:#97A2B8;font-size:clamp(8px,.58vw,10px);letter-spacing:1.8px;text-transform:uppercase;margin-top:auto}
+.footer-brand{display:flex;align-items:center;gap:10px;min-width:0}
+.footer-logo-slot{width:64px;height:24px;display:flex;align-items:center;flex:0 0 64px}
+.footer-brand-text{color:var(--ink);font-size:18px;font-style:italic;font-weight:900}
+.footer-logo{width:64px;height:24px;object-fit:contain}
+.footer-line{width:28px;height:3px;background:var(--y2);display:inline-block;margin-left:9px}
 
 @media (min-width:1200px) and (max-height:900px){
-  header[data-testid="stHeader"]{height:62px!important}
-  .hub-header-content{height:62px}
-  .page-root{padding-top:62px}
-
-  .brand-slot{height:50px}
-  .brand-logo{height:46px;max-height:46px}
-  .brand-text{font-size:36px}
-  .user-badge{width:30px;height:30px}
-  .user{font-size:13px}
-
-  .hero{min-height:205px}
-  .hero-image{min-height:205px}
-  .hero-copy{padding-top:26px;padding-bottom:20px}
-  .hero h1{font-size:38px}
-  .hero h2{font-size:22px}
-  .hero p{margin-top:12px;font-size:13px}
-
-  .apps-wrap{padding-top:8px;padding-bottom:14px;margin-top:-6px}
-  .apps-grid{gap:14px}
-  .app-card{min-height:176px;padding:18px 22px}
-  .app-icon{width:68px;height:68px;flex-basis:68px}
-  .app-icon img{width:54px;height:54px}
-  .app-title{font-size:20px;margin-top:8px}
-  .app-desc{font-size:13px;margin-top:4px}
-  .access{margin-top:12px;font-size:14px}
-  .status{padding:6px 10px;font-size:11px}
-
-  .page-footer{min-height:44px}
-  .footer-logo-slot{height:24px}
-  .footer-logo{height:24px}
-  .footer-brand-text{font-size:18px}
+  header[data-testid="stHeader"]{height:58px!important}
+  .hub-header-content{height:58px}
+  .page-root{padding-top:58px}
+  .brand-slot{height:46px}
+  .brand-logo{height:43px;max-height:43px}
+  .brand-text{font-size:34px}
+  .user-badge{width:28px;height:28px}
+  .user{font-size:12px}
+  .hero{padding-top:18px;padding-bottom:12px}
+  .hero-image{height:178px;min-height:178px}
+  .hero h1{font-size:36px}
+  .hero h2{font-size:20px}
+  .hero p{font-size:12px;margin-top:10px}
+  .hero-accent{margin-top:12px;height:3px}
+  .apps-wrap{padding-top:6px;padding-bottom:10px}
+  .apps-grid{gap:12px}
+  .app-card{min-height:140px;padding:16px 18px 14px}
+  .card-content{grid-template-columns:58px minmax(0,1fr);gap:13px;padding-right:82px}
+  .app-icon{width:58px;height:58px;flex-basis:58px}
+  .app-icon img{width:46px;height:46px}
+  .app-title{font-size:18px}
+  .app-desc{font-size:12px}
+  .status{top:15px;right:16px;padding:5px 9px}
+  .access{margin-top:10px;font-size:13px}
+  .page-footer{min-height:34px}
+  .footer-logo-slot{height:20px}
+  .footer-logo{height:20px}
+  .footer-brand-text{font-size:16px}
 }
-
 @media (max-width:1320px){
-  :root{--page-pad:clamp(18px,3vw,42px)}
+  :root{--page-pad:clamp(20px,3vw,42px)}
   .hub-header-content{padding-right:170px}
-  .hero{grid-template-columns:1fr 1fr}
-  .app-card{padding:20px 22px}
-  .app-title{font-size:20px}
+  .hero{grid-template-columns:minmax(0,.95fr) minmax(380px,1.05fr);gap:22px}
+  .app-card{padding-left:18px;padding-right:18px}
+  .card-content{padding-right:78px}
 }
-
 @media (max-width:1120px){
   .apps-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .user{display:none}
-  .hero h1{font-size:40px}
+  .hero{grid-template-columns:1fr 1fr}
+  .hero h1{font-size:36px}
 }
-
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr;gap:18px}
+  .hero-image{height:190px}
+}
 @media (max-width:760px){
-  header[data-testid="stHeader"]{height:66px!important}
-  .hub-header-content{height:66px;padding:0 20px 0 62px}
-  .page-root{padding-top:66px;min-height:100dvh}
-  .brand-slot{width:150px;height:50px}
-  .brand-logo{width:150px;height:46px}
-  .brand-text{font-size:35px}
-  .hero{grid-template-columns:1fr;min-height:auto}
-  .hero-copy{padding:34px 22px 28px;background:#fff}
-  .hero h1{font-size:34px}
-  .hero h2{font-size:20px}
-  .hero-image{min-height:190px}
-  .apps-wrap{padding:18px;margin-top:0}
+  header[data-testid="stHeader"]{height:62px!important}
+  .hub-header-content{height:62px;padding:0 20px 0 62px}
+  .page-root{padding-top:62px;min-height:100dvh}
+  .brand-slot{width:145px;height:48px}
+  .brand-logo{width:145px;height:44px}
+  .brand-text{font-size:34px}
+  .hero{grid-template-columns:1fr;padding:28px 20px 16px}
+  .hero h1{font-size:32px}
+  .hero h2{font-size:19px}
+  .hero-image{height:180px;min-height:180px}
+  .apps-wrap{padding:12px 18px 18px}
   .apps-grid{grid-template-columns:1fr}
-  .app-card{min-height:180px;padding:22px}
-  .page-footer{flex-direction:column;gap:10px;padding:16px 18px;text-align:center}
+  .app-card{min-height:145px;padding:18px}
+  .card-content{grid-template-columns:60px minmax(0,1fr);padding-right:70px}
+  .app-icon{width:60px;height:60px;flex-basis:60px}
+  .app-icon img{width:48px;height:48px}
+  .page-footer{flex-direction:column;gap:8px;padding:10px 18px;text-align:center}
   .footer-brand{justify-content:center;flex-wrap:wrap}
 }
 </style>'''
@@ -544,20 +511,22 @@ def icon_html(app):
 cards = ""
 for app in cfg["apps"]:
     cards += (
-        f'<a class="app-card" href="{esc(safe_url(app.get("url", "#")))}" target="_blank">'
-        f'<div><div class="card-top"><div class="app-icon">{icon_html(app)}</div>'
-        f'<div class="status"><span class="dot"></span>{esc(app.get("status", "Ativo"))}</div></div>'
-        f'<div class="app-title">{esc(app.get("nome", "Aplicativo"))}</div>'
-        f'<div class="app-desc">{esc(app.get("descricao", ""))}</div></div>'
-        f'<div class="access">Acessar →</div></a>'
+        f'<a class="app-card" href="{esc(safe_url(app.get("url", "#")))}" target="_blank" rel="noopener noreferrer">'
+        f'<div class="card-content">'
+        f'<div class="app-icon">{icon_html(app)}</div>'
+        f'<div class="card-copy"><div class="app-title">{esc(app.get("nome", "Aplicativo"))}</div>'
+        f'<div class="app-desc">{esc(app.get("descricao", ""))}</div></div></div>'
+        f'<div class="status"><span class="dot"></span>{esc(app.get("status", "Ativo"))}</div>'
+        f'<div class="access">Acessar <span class="access-arrow">→</span></div></a>'
     )
 
 page = (
     f'<div class="hub-header-content"><div class="brand-slot">{logo_top}</div>'
-    f'<div class="user"><div class="user-badge">●</div><span>{esc(cfg["usuario"])}</span></div></div>'
+    f'<div class="user"><div class="user-badge">●</div><span>{esc(cfg["usuario"])}</span><span>⌄</span></div></div>'
     f'<div class="page-root"><section class="hero"><div class="hero-copy">'
+    f'<div class="hero-eyebrow">BEM-VINDO(A) AO</div>'
     f'<h1>{esc(cfg["titulo"])}</h1><h2>{esc(cfg["subtitulo"])}</h2>'
-    f'<p>{esc(cfg["descricao"]).replace(chr(10), "<br>")}</p></div>'
+    f'<p>{esc(cfg["descricao"]).replace(chr(10), "<br>")}</p><div class="hero-accent"></div></div>'
     f'<div class="hero-image" style="background-image:url(\'{esc(cfg["hero_image"])}\')">'
     f'<div class="hero-slogan">{esc(cfg["slogan"]).replace(chr(10), "<br>")}</div></div></section>'
     f'<div class="apps-wrap"><div class="apps-grid">{cards}</div></div>'
