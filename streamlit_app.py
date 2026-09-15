@@ -340,7 +340,7 @@ html,body,[data-testid="stAppViewContainer"]{min-height:100%}
 
 header[data-testid="stHeader"]{
   background:var(--y)!important;
-  height:76px!important;
+  height:68px!important;
   border-bottom:1px solid rgba(0,0,0,.06)!important;
   z-index:100000!important;
 }
@@ -354,7 +354,7 @@ header[data-testid="stHeader"] *{color:var(--ink)!important}
 .hub-header-content{
   position:fixed;
   top:0;left:0;right:0;
-  height:76px;
+  height:68px;
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -364,7 +364,7 @@ header[data-testid="stHeader"] *{color:var(--ink)!important}
 }
 
 .page-root{
-  padding-top:76px;
+  padding-top:68px;
   min-height:100dvh;
   display:flex;
   flex-direction:column;
@@ -434,7 +434,7 @@ header[data-testid="stHeader"] *{color:var(--ink)!important}
 .access{margin-top:18px;color:#F1A000;font-size:clamp(14px,.9vw,16px);font-weight:800;display:flex;gap:10px}
 
 .page-footer{
-  min-height:62px;
+  min-height:52px;
   border-top:1px solid var(--line);
   display:flex;
   align-items:center;
@@ -453,16 +453,38 @@ header[data-testid="stHeader"] *{color:var(--ink)!important}
 .footer-logo{width:72px;height:30px;object-fit:contain}
 .footer-line{width:32px;height:3px;background:var(--y2);display:inline-block;margin-left:10px}
 
-@media (min-width:1200px) and (max-height:850px){
-  .hero{min-height:270px}
-  .hero-image{min-height:270px}
-  .hero-copy{padding-top:46px;padding-bottom:34px}
-  .app-card{min-height:205px}
-  .app-icon{width:76px;height:76px;flex-basis:76px}
-  .app-icon img{width:60px;height:60px}
-  .app-title{font-size:22px}
-  .app-desc{font-size:14px}
-  .apps-wrap{padding-bottom:24px}
+@media (min-width:1200px) and (max-height:900px){
+  header[data-testid="stHeader"]{height:62px!important}
+  .hub-header-content{height:62px}
+  .page-root{padding-top:62px}
+
+  .brand-slot{height:50px}
+  .brand-logo{height:46px;max-height:46px}
+  .brand-text{font-size:36px}
+  .user-badge{width:30px;height:30px}
+  .user{font-size:13px}
+
+  .hero{min-height:230px}
+  .hero-image{min-height:230px}
+  .hero-copy{padding-top:32px;padding-bottom:24px}
+  .hero h1{font-size:38px}
+  .hero h2{font-size:22px}
+  .hero p{margin-top:12px;font-size:13px}
+
+  .apps-wrap{padding-top:8px;padding-bottom:14px;margin-top:-6px}
+  .apps-grid{gap:14px}
+  .app-card{min-height:176px;padding:18px 22px}
+  .app-icon{width:68px;height:68px;flex-basis:68px}
+  .app-icon img{width:54px;height:54px}
+  .app-title{font-size:20px;margin-top:8px}
+  .app-desc{font-size:13px;margin-top:4px}
+  .access{margin-top:12px;font-size:14px}
+  .status{padding:6px 10px;font-size:11px}
+
+  .page-footer{min-height:44px}
+  .footer-logo-slot{height:24px}
+  .footer-logo{height:24px}
+  .footer-brand-text{font-size:18px}
 }
 
 @media (max-width:1320px){
