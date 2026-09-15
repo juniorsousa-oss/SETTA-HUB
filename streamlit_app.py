@@ -379,7 +379,7 @@ header[data-testid="stHeader"] *{color:var(--ink)!important}
 .hero{
   display:grid;
   grid-template-columns:minmax(0,1.02fr) minmax(0,1fr);
-  min-height:clamp(240px,30vh,310px);
+  min-height:clamp(205px,24vh,255px);
   background:#fff;
   overflow:hidden;
 }
@@ -391,7 +391,7 @@ header[data-testid="stHeader"] *{color:var(--ink)!important}
 .hero h1{margin:0;color:var(--ink);font-size:clamp(34px,2.6vw,48px);line-height:1.03;letter-spacing:-2px;font-weight:900}
 .hero h2{margin:8px 0 0;color:#66728B;font-size:clamp(20px,1.55vw,27px);line-height:1.2;font-weight:500}
 .hero p{margin:clamp(14px,1.25vw,20px) 0 0;color:#73809B;font-size:clamp(13px,.92vw,16px);line-height:1.55;max-width:620px}
-.hero-image{min-height:clamp(240px,30vh,310px);background-size:cover;background-position:center;position:relative}
+.hero-image{min-height:clamp(205px,24vh,255px);background-size:cover;background-position:center;position:relative}
 .hero-slogan{position:absolute;right:7%;top:clamp(24px,3vw,38px);color:#60708F;font-size:clamp(10px,.7vw,12px);letter-spacing:4px;line-height:1.7;font-weight:700}
 .hero-slogan:after{content:"";display:block;width:42px;height:3px;background:var(--y2);margin-top:8px}
 
@@ -464,9 +464,9 @@ header[data-testid="stHeader"] *{color:var(--ink)!important}
   .user-badge{width:30px;height:30px}
   .user{font-size:13px}
 
-  .hero{min-height:230px}
-  .hero-image{min-height:230px}
-  .hero-copy{padding-top:32px;padding-bottom:24px}
+  .hero{min-height:205px}
+  .hero-image{min-height:205px}
+  .hero-copy{padding-top:26px;padding-bottom:20px}
   .hero h1{font-size:38px}
   .hero h2{font-size:22px}
   .hero p{margin-top:12px;font-size:13px}
