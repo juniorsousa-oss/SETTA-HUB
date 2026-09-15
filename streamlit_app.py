@@ -9,7 +9,7 @@ st.set_page_config(
     page_title="SETTA HUB | Central de Aplicativos",
     page_icon="🟨",
     layout="wide",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state="expanded",
 )
 
 DEFAULT_CONFIG = {
@@ -57,41 +57,45 @@ def safe_url(value):
     return "#"
 
 
+def esc(value):
+    return html.escape(str(value or ""), quote=True)
+
+
 cfg = st.session_state.hub_config
 uv = st.session_state.upload_version
 
 # ============================================================
 # MENU LATERAL DE CONFIGURAÇÕES
-# As alterações permanecem durante a sessão atual do aplicativo.
 # ============================================================
 with st.sidebar:
     st.title("⚙️ Configurações")
-    st.caption("Personalize o SETTA HUB sem alterar o layout.")
+    st.caption("Personalize o SETTA HUB sem alterar as dimensões do layout.")
 
     with st.form("hub_settings_form"):
         st.subheader("Identidade visual")
+
         logo_top_file = st.file_uploader(
             "Logo superior",
             type=["png", "jpg", "jpeg", "webp"],
             key=f"logo_top_{uv}",
-            help="A imagem será ajustada automaticamente ao espaço atual da logo.",
+            help="A nova imagem será ajustada automaticamente ao mesmo espaço da logo atual.",
         )
         logo_footer_file = st.file_uploader(
             "Logo inferior",
             type=["png", "jpg", "jpeg", "webp"],
             key=f"logo_footer_{uv}",
-            help="A imagem será ajustada automaticamente ao espaço atual da logo do rodapé.",
+            help="A nova imagem será ajustada automaticamente ao mesmo espaço da logo atual.",
         )
         hero_file = st.file_uploader(
             "Imagem principal",
             type=["png", "jpg", "jpeg", "webp"],
             key=f"hero_{uv}",
-            help="A imagem ocupará exatamente a mesma área atual, com corte automático para preencher o quadro.",
+            help="A nova imagem ocupará exatamente a mesma área da imagem principal atual.",
         )
 
-        clear_logo_top = st.checkbox("Remover logo superior personalizada")
-        clear_logo_footer = st.checkbox("Remover logo inferior personalizada")
-        restore_hero = st.checkbox("Restaurar imagem principal padrão")
+        clear_logo_top = st.checkbox("Usar logo superior padrão")
+        clear_logo_footer = st.checkbox("Usar logo inferior padrão")
+        restore_hero = st.checkbox("Usar imagem principal padrão")
 
         st.divider()
         st.subheader("Textos da página")
@@ -106,6 +110,7 @@ with st.sidebar:
         st.divider()
         st.subheader("Cartões e redirecionamentos")
         edited_apps = []
+
         for i, app in enumerate(cfg["apps"], start=1):
             with st.expander(f"{i}. {app['nome']}"):
                 nome = st.text_input("Nome do cartão", value=app["nome"], key=f"nome_{i}_{uv}")
@@ -168,6 +173,9 @@ with st.sidebar:
 
 cfg = st.session_state.hub_config
 
+# ============================================================
+# ESTILO
+# ============================================================
 st.html(
     """
 <style>
@@ -186,33 +194,45 @@ st.html(
     }
 
     header[data-testid="stHeader"]{
-        background:transparent;
-        height:0;
+        background:transparent !important;
+        height:0 !important;
+        overflow:visible !important;
+        z-index:99999 !important;
     }
 
-    [data-testid="stToolbar"], [data-testid="stDecoration"],
-    #MainMenu, footer{
+    [data-testid="stToolbar"],
+    [data-testid="stDecoration"],
+    #MainMenu,
+    footer{
         display:none !important;
     }
 
     [data-testid="stSidebar"]{
-        border-right:1px solid #E7EBF1;
+        border-right:1px solid #E7EBF1 !important;
+        background:#FFFFFF !important;
     }
 
     [data-testid="stSidebar"] > div:first-child{
-        background:#FFFFFF;
+        background:#FFFFFF !important;
     }
 
+    /* Mantém o controle para reabrir o menu sempre visível. */
     [data-testid="stSidebarCollapsedControl"]{
         display:flex !important;
+        visibility:visible !important;
+        opacity:1 !important;
         position:fixed !important;
-        top:20px !important;
-        left:18px !important;
-        z-index:10000 !important;
+        top:16px !important;
+        left:16px !important;
+        z-index:100000 !important;
+        width:40px !important;
+        height:40px !important;
+        align-items:center !important;
+        justify-content:center !important;
         background:#FFFFFF !important;
-        border:1px solid rgba(30,35,46,.10) !important;
+        border:1px solid rgba(30,35,46,.12) !important;
         border-radius:10px !important;
-        box-shadow:0 3px 10px rgba(30,35,46,.08) !important;
+        box-shadow:0 4px 14px rgba(30,35,46,.12) !important;
     }
 
     .block-container{
@@ -223,7 +243,7 @@ st.html(
 
     .topbar{
         height:82px;
-        background:linear-gradient(90deg,var(--setta-yellow) 0%, #FFC83E 62%, var(--setta-yellow) 100%);
+        background:linear-gradient(90deg,var(--setta-yellow) 0%,#FFC83E 62%,var(--setta-yellow) 100%);
         display:flex;
         align-items:center;
         justify-content:space-between;
@@ -380,12 +400,12 @@ st.html(
         justify-content:space-between;
         text-decoration:none !important;
         color:inherit !important;
-        background:radial-gradient(circle at 108% 110%, rgba(253,195,59,.16) 0 27%, transparent 28%),#FFFFFF;
+        background:radial-gradient(circle at 108% 110%,rgba(253,195,59,.16) 0 27%,transparent 28%),#FFFFFF;
         border:1px solid var(--setta-line);
         border-radius:16px;
         padding:24px 30px 22px 30px;
         box-shadow:0 8px 24px rgba(44,62,92,.06);
-        transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+        transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
     }
 
     .app-card:hover{
@@ -546,27 +566,19 @@ st.html(
         .apps-wrap{padding:18px 18px 28px 18px;margin-top:0;}
         .apps-grid{grid-template-columns:1fr;}
         .app-card{min-height:175px;padding:22px;}
-        .page-footer{
-            flex-direction:column;
-            gap:10px;
-            justify-content:center;
-            text-align:center;
-            padding:16px 18px;
-        }
+        .page-footer{flex-direction:column;gap:10px;justify-content:center;text-align:center;padding:16px 18px;}
         .footer-brand{justify-content:center;flex-wrap:wrap;}
     }
 </style>
 """
 )
 
-def esc(value):
-    return html.escape(str(value or ""), quote=True)
-
 logo_top_html = (
     f'<img class="brand-logo" src="{cfg["logo_top"]}" alt="Logo superior">'
     if cfg["logo_top"]
     else '<div class="brand-text">Setta</div>'
 )
+
 logo_footer_html = (
     f'<img class="footer-logo" src="{cfg["logo_footer"]}" alt="Logo inferior">'
     if cfg["logo_footer"]
