@@ -445,11 +445,29 @@ header[data-testid="stHeader"] *{color:var(--ink)!important}
 .brand-slot{width:170px;height:50px;display:flex;align-items:center;overflow:hidden}
 .brand-text{color:var(--ink);font-size:clamp(34px,2.2vw,40px);font-style:italic;font-weight:900;letter-spacing:-3px}
 .brand-logo{width:170px;height:48px;max-width:170px;max-height:48px;object-fit:contain;object-position:left center}
-.user{position:absolute;top:50%;right:220px;transform:translateY(-50%);color:var(--ink);font-size:clamp(13px,.85vw,15px);font-weight:700;display:flex;gap:8px;align-items:center;white-space:nowrap}
-.user-badge{position:relative;width:32px;height:32px;border-radius:50%;background:#fff;border:1px solid rgba(30,35,46,.16);box-shadow:0 2px 8px rgba(20,35,58,.08);flex:0 0 32px}
-.user-badge:before{content:"";position:absolute;top:7px;left:50%;width:8px;height:8px;transform:translateX(-50%);border-radius:50%;background:#23324A}
-.user-badge:after{content:"";position:absolute;left:50%;bottom:6px;width:15px;height:8px;transform:translateX(-50%);border-radius:9px 9px 5px 5px;background:#23324A}
-.user-chevron{font-size:14px;margin-left:1px}
+.user{position:absolute;top:50%;right:clamp(175px,12vw,230px);transform:translateY(-50%);color:var(--ink);font-size:clamp(13px,.85vw,15px);font-weight:700;display:flex;gap:8px;align-items:center;white-space:nowrap;line-height:1}
+.user-badge{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid rgba(30,35,46,.16);box-shadow:0 2px 8px rgba(20,35,58,.08);flex:0 0 32px;overflow:hidden}
+.user-badge svg{display:block;width:18px;height:18px;min-width:18px;min-height:18px;fill:#23324A;stroke:none}
+.user-chevron{font-size:14px;line-height:1;margin-left:1px;flex:0 0 auto}
+
+/* Botão nativo do Streamlit Community Cloud: Gerenciar aplicativo */
+[data-testid="manage_app_button"],
+button[data-testid="manage_app_button"],
+[class*="viewerBadge"] button,
+[class*="viewerBadge"] a{
+  background:var(--y)!important;
+  color:var(--ink)!important;
+  border-color:#DFA817!important;
+  box-shadow:0 4px 12px rgba(31,45,73,.12)!important;
+}
+[data-testid="manage_app_button"] *,
+button[data-testid="manage_app_button"] *,
+[class*="viewerBadge"] button *,
+[class*="viewerBadge"] a *{
+  color:var(--ink)!important;
+  fill:var(--ink)!important;
+  stroke:var(--ink)!important;
+}
 
 /* Login administrativo com a mesma linguagem visual do SETTA HUB */
 [data-testid="stSidebar"] .admin-login-head{
@@ -593,7 +611,8 @@ header[data-testid="stHeader"] *{color:var(--ink)!important}
   .brand-slot{height:46px}
   .brand-logo{height:43px;max-height:43px}
   .brand-text{font-size:34px}
-  .user-badge{width:28px;height:28px}
+  .user-badge{width:30px;height:30px;flex-basis:30px}
+  .user-badge svg{width:17px;height:17px;min-width:17px;min-height:17px}
   .user{font-size:12px}
   .hero{padding-top:18px;padding-bottom:12px}
   .hero-image{height:178px;min-height:178px}
@@ -618,7 +637,7 @@ header[data-testid="stHeader"] *{color:var(--ink)!important}
 }
 @media (max-width:1320px){
   :root{--page-pad:clamp(20px,3vw,42px)}
-  .user{right:175px}
+  .user{right:165px}
   .hero{grid-template-columns:minmax(0,.95fr) minmax(380px,1.05fr);gap:22px}
   .app-card{padding-left:18px;padding-right:18px}
   .card-content{padding-right:78px}
@@ -689,7 +708,7 @@ for app in cfg["apps"]:
 
 page = (
     f'<div class="hub-header-content"><div class="brand-slot">{logo_top}</div>'
-    f'<div class="user"><div class="user-badge"></div><span>{esc(cfg["usuario"])}</span><span class="user-chevron">⌄</span></div></div>'
+    f'<div class="user"><div class="user-badge"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 20c.45-4.05 3.18-6.2 7.5-6.2s7.05 2.15 7.5 6.2H4.5z"></path></svg></div><span>{esc(cfg["usuario"])}</span><span class="user-chevron">⌄</span></div></div>'
     f'<div class="page-root"><section class="hero"><div class="hero-copy">'
     f'<div class="hero-eyebrow">BEM-VINDO(A) AO</div>'
     f'<h1>{esc(cfg["titulo"])}</h1><h2>{esc(cfg["subtitulo"])}</h2>'
