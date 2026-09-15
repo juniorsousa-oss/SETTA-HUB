@@ -11,9 +11,11 @@ import requests
 import streamlit as st
 from PIL import Image
 
+favicon = Image.open("Ativos/favicon.png")
+
 st.set_page_config(
     page_title="SETTA HUB | Central de Aplicativos",
-    page_icon="🟨",
+    page_icon=favicon,
     layout="wide",
     initial_sidebar_state="collapsed",
 )
