@@ -11,7 +11,7 @@ import requests
 import streamlit as st
 from PIL import Image
 
-favicon = Image.open("Ativos/favicon.png")
+favicon = Image.open("favicon.png.png")
 
 st.set_page_config(
     page_title="SETTA HUB | Central de Aplicativos",
