@@ -1,4 +1,4 @@
-name: Fix responsive user avatar and manage button
+name: Add custom user avatar
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Corrige avatar responsivo e botão Gerenciar aplicativo
+      - name: Adiciona imagem personalizada do usuário
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -23,60 +23,172 @@ jobs:
           path = Path('streamlit_app.py')
           text = path.read_text(encoding='utf-8')
 
-          old_user = '''.user{position:absolute;top:50%;right:220px;transform:translateY(-50%);color:var(--ink);font-size:clamp(13px,.85vw,15px);font-weight:700;display:flex;gap:8px;align-items:center;white-space:nowrap}
-          .user-badge{position:relative;width:32px;height:32px;border-radius:50%;background:#fff;border:1px solid rgba(30,35,46,.16);box-shadow:0 2px 8px rgba(20,35,58,.08);flex:0 0 32px}
-          .user-badge:before{content:"";position:absolute;top:7px;left:50%;width:8px;height:8px;transform:translateX(-50%);border-radius:50%;background:#23324A}
-          .user-badge:after{content:"";position:absolute;left:50%;bottom:6px;width:15px;height:8px;transform:translateX(-50%);border-radius:9px 9px 5px 5px;background:#23324A}
-          .user-chevron{font-size:14px;margin-left:1px}'''
+          # Campo persistente da imagem do usuário.
+          if '"user_avatar": ""' not in text:
+              text = text.replace(
+                  '    "usuario": "Olá, Usuário",\n',
+                  '    "usuario": "Olá, Usuário",\n    "user_avatar": "",\n',
+                  1,
+              )
 
-          new_user = '''.user{position:absolute;top:50%;right:clamp(175px,12vw,230px);transform:translateY(-50%);color:var(--ink);font-size:clamp(13px,.85vw,15px);font-weight:700;display:flex;gap:8px;align-items:center;white-space:nowrap;line-height:1}
-          .user-badge{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid rgba(30,35,46,.16);box-shadow:0 2px 8px rgba(20,35,58,.08);flex:0 0 32px;overflow:hidden}
-          .user-badge svg{display:block;width:18px;height:18px;min-width:18px;min-height:18px;fill:#23324A;stroke:none}
-          .user-chevron{font-size:14px;line-height:1;margin-left:1px;flex:0 0 auto}
+          if '        "user_avatar",\n' not in text:
+              text = text.replace(
+                  '        "usuario",\n        "rodape_esquerdo",',
+                  '        "usuario",\n        "user_avatar",\n        "rodape_esquerdo",',
+                  1,
+              )
 
-          /* Botão nativo do Streamlit Community Cloud: Gerenciar aplicativo */
-          [data-testid="manage_app_button"],
-          button[data-testid="manage_app_button"],
-          [class*="viewerBadge"] button,
-          [class*="viewerBadge"] a{
-            background:var(--y)!important;
-            color:var(--ink)!important;
-            border-color:#DFA817!important;
-            box-shadow:0 4px 12px rgba(31,45,73,.12)!important;
-          }
-          [data-testid="manage_app_button"] *,
-          button[data-testid="manage_app_button"] *,
-          [class*="viewerBadge"] button *,
-          [class*="viewerBadge"] a *{
-            color:var(--ink)!important;
-            fill:var(--ink)!important;
-            stroke:var(--ink)!important;
-          }'''
+          # Recorta e padroniza a foto em formato quadrado.
+          icon_marker = '''def safe_url(value):
+          '''
+          avatar_fn = '''def user_avatar_image(uploaded_file):
+              if uploaded_file is None:
+                  return ""
+              if uploaded_file.size > 2 * 1024 * 1024:
+                  raise ValueError("Imagem do usuário acima de 2 MB.")
 
-          if old_user in text:
-              text = text.replace(old_user, new_user, 1)
-          elif 'user-badge svg' not in text:
-              raise SystemExit('Bloco CSS do usuário não encontrado')
+              image = Image.open(BytesIO(uploaded_file.getvalue())).convert("RGBA")
+              side = min(image.width, image.height)
+              left = (image.width - side) // 2
+              top = (image.height - side) // 2
+              image = image.crop((left, top, left + side, top + side))
+              image = image.resize((128, 128), Image.Resampling.LANCZOS)
 
-          old_markup = 'f\'<div class="user"><div class="user-badge"></div><span>{esc(cfg["usuario"])}</span><span class="user-chevron">⌄</span></div></div>\''
-          new_markup = 'f\'<div class="user"><div class="user-badge"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 20c.45-4.05 3.18-6.2 7.5-6.2s7.05 2.15 7.5 6.2H4.5z"></path></svg></div><span>{esc(cfg["usuario"])}</span><span class="user-chevron">⌄</span></div></div>\''
+              output = BytesIO()
+              image.save(output, "PNG", optimize=True)
+              return "data:image/png;base64," + base64.b64encode(output.getvalue()).decode()
 
+
+          def safe_url(value):
+          '''
+          if 'def user_avatar_image' not in text:
+              if icon_marker not in text:
+                  raise SystemExit('Função safe_url não encontrada')
+              text = text.replace(icon_marker, avatar_fn, 1)
+
+          # Upload no menu de identidade visual.
+          upload_old = '''            hero_upload = st.file_uploader(
+              "Imagem principal",
+              type=["png", "jpg", "jpeg", "webp"],
+              key=f"h{uv}",
+          )
+
+          clear_top = st.checkbox("Remover logo superior e usar texto Setta")
+          clear_footer = st.checkbox("Usar logo inferior padrão")
+          clear_hero = st.checkbox("Usar imagem principal padrão")
+          '''
+          upload_new = '''            hero_upload = st.file_uploader(
+              "Imagem principal",
+              type=["png", "jpg", "jpeg", "webp"],
+              key=f"h{uv}",
+          )
+          user_avatar_upload = st.file_uploader(
+              "Imagem do usuário",
+              type=["png", "jpg", "jpeg", "webp"],
+              key=f"avatar{uv}",
+              help="A imagem será recortada automaticamente e exibida dentro do círculo do usuário.",
+          )
+
+          clear_top = st.checkbox("Remover logo superior e usar texto Setta")
+          clear_footer = st.checkbox("Usar logo inferior padrão")
+          clear_hero = st.checkbox("Usar imagem principal padrão")
+          clear_user_avatar = st.checkbox("Remover imagem do usuário e usar ícone padrão")
+          '''
+          if 'user_avatar_upload = st.file_uploader' not in text:
+              if upload_old not in text:
+                  raise SystemExit('Bloco de identidade visual não encontrado')
+              text = text.replace(upload_old, upload_new, 1)
+
+          preview_old = '''            if cfg.get("logo_top"):
+              st.caption("Logo superior atual")
+              st.image(cfg["logo_top"], width=150)
+
+          st.divider()
+          '''
+          preview_new = '''            if cfg.get("logo_top"):
+              st.caption("Logo superior atual")
+              st.image(cfg["logo_top"], width=150)
+
+          if cfg.get("user_avatar"):
+              st.caption("Imagem atual do usuário")
+              st.image(cfg["user_avatar"], width=72)
+
+          st.divider()
+          '''
+          if 'Imagem atual do usuário' not in text:
+              if preview_old not in text:
+                  raise SystemExit('Preview da identidade visual não encontrado')
+              text = text.replace(preview_old, preview_new, 1)
+
+          # Persistência no Supabase.
+          save_old = '''            if clear_hero:
+              new_cfg["hero_image"] = DEFAULT_CONFIG["hero_image"]
+          elif hero_upload:
+              new_cfg["hero_image"] = data_uri(hero_upload, 4)
+
+          for i, app in enumerate(apps):
+          '''
+          save_new = '''            if clear_hero:
+              new_cfg["hero_image"] = DEFAULT_CONFIG["hero_image"]
+          elif hero_upload:
+              new_cfg["hero_image"] = data_uri(hero_upload, 4)
+
+          if clear_user_avatar:
+              new_cfg["user_avatar"] = ""
+          elif user_avatar_upload:
+              new_cfg["user_avatar"] = user_avatar_image(user_avatar_upload)
+
+          for i, app in enumerate(apps):
+          '''
+          if 'new_cfg["user_avatar"]' not in text:
+              if save_old not in text:
+                  raise SystemExit('Bloco de salvamento não encontrado')
+              text = text.replace(save_old, save_new, 1)
+
+          # CSS para imagem circular.
+          css_old = '.user-badge svg{display:block;width:18px;height:18px;min-width:18px;min-height:18px;fill:#23324A;stroke:none}\n.user-chevron{font-size:14px;line-height:1;margin-left:1px;flex:0 0 auto}'
+          css_new = '.user-badge svg{display:block;width:18px;height:18px;min-width:18px;min-height:18px;fill:#23324A;stroke:none}\n.user-badge img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:50%}'
+          if '.user-badge img{' not in text:
+              if css_old not in text:
+                  raise SystemExit('CSS do usuário não encontrado')
+              text = text.replace(css_old, css_new, 1)
+
+          # HTML do avatar personalizado.
+          html_anchor = '''logo_footer = (
+              f'<img class="footer-logo" src="{cfg["logo_footer"]}" alt="Logo">'
+              if cfg.get("logo_footer")
+              else '<div class="footer-brand-text">Setta</div>'
+          )
+
+
+          def icon_html(app):
+          '''
+          html_new = '''logo_footer = (
+              f'<img class="footer-logo" src="{cfg["logo_footer"]}" alt="Logo">'
+              if cfg.get("logo_footer")
+              else '<div class="footer-brand-text">Setta</div>'
+          )
+
+          user_avatar_html = (
+              f'<img src="{cfg["user_avatar"]}" alt="Usuário">'
+              if cfg.get("user_avatar")
+              else '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 20c.45-4.05 3.18-6.2 7.5-6.2s7.05 2.15 7.5 6.2H4.5z"></path></svg>'
+          )
+
+
+          def icon_html(app):
+          '''
+          if 'user_avatar_html = (' not in text:
+              if html_anchor not in text:
+                  raise SystemExit('Âncora do avatar HTML não encontrada')
+              text = text.replace(html_anchor, html_new, 1)
+
+          old_markup = 'f\'<div class="user"><div class="user-badge"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 20c.45-4.05 3.18-6.2 7.5-6.2s7.05 2.15 7.5 6.2H4.5z"></path></svg></div><span>{esc(cfg["usuario"])}</span><span class="user-chevron">⌄</span></div></div>\''
+          new_markup = 'f\'<div class="user"><div class="user-badge">{user_avatar_html}</div><span>{esc(cfg["usuario"])}</span></div></div>\''
           if old_markup in text:
               text = text.replace(old_markup, new_markup, 1)
-          elif '<svg viewBox="0 0 24 24"' not in text:
-              raise SystemExit('Markup do avatar não encontrado')
-
-          text = text.replace(
-              '.user-badge{width:28px;height:28px}\n  .user{font-size:12px}',
-              '.user-badge{width:30px;height:30px;flex-basis:30px}\n  .user-badge svg{width:17px;height:17px;min-width:17px;min-height:17px}\n  .user{font-size:12px}',
-              1,
-          )
-
-          text = text.replace(
-              '@media (max-width:1320px){\n  :root{--page-pad:clamp(20px,3vw,42px)}\n  .user{right:175px}',
-              '@media (max-width:1320px){\n  :root{--page-pad:clamp(20px,3vw,42px)}\n  .user{right:165px}',
-              1,
-          )
+          elif '<span class="user-chevron">' in text:
+              raise SystemExit('Markup do usuário não reconhecido')
 
           path.write_text(text, encoding='utf-8')
           PY
@@ -84,10 +196,10 @@ jobs:
       - name: Valida sintaxe Python
         run: python -m py_compile streamlit_app.py
 
-      - name: Commit das correções visuais
+      - name: Commit da personalização do usuário
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add streamlit_app.py
-          git diff --cached --quiet || git commit -m "Corrige avatar responsivo e estiliza botão de gerenciamento"
+          git diff --cached --quiet || git commit -m "Permite imagem personalizada no usuário"
           git push
