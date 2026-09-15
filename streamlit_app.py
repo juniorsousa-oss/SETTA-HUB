@@ -1,6 +1,8 @@
 import base64
 import copy
 import html
+import hashlib
+import hmac
 from datetime import datetime, timezone
 from io import BytesIO
 from urllib.parse import urlparse
@@ -13,7 +15,7 @@ st.set_page_config(
     page_title="SETTA HUB | Central de Aplicativos",
     page_icon="🟨",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
 )
 
 SB_URL = "https://cuixazpxkvniqldmmnth.supabase.co"
@@ -152,6 +154,22 @@ def esc(value):
     return html.escape(str(value or ""), quote=True)
 
 
+ADMIN_PASSWORD_FALLBACK_HASH = "c554a2703714f35c0c629ee4e73f84fd360220d6e3b7c65ba81b29343affc50d"
+
+
+def admin_password_valid(password):
+    try:
+        configured = str(st.secrets.get("SETTA_HUB_ADMIN_PASSWORD", "")).strip()
+    except Exception:
+        configured = ""
+
+    if configured:
+        return hmac.compare_digest(str(password), configured)
+
+    digest = hashlib.sha256(str(password).encode("utf-8")).hexdigest()
+    return hmac.compare_digest(digest, ADMIN_PASSWORD_FALLBACK_HASH)
+
+
 if "hub_config" not in st.session_state:
     try:
         st.session_state.hub_config = load_db()
@@ -164,163 +182,192 @@ if "uv" not in st.session_state:
     st.session_state.uv = 0
 if "notice" not in st.session_state:
     st.session_state.notice = ""
+if "admin_authenticated" not in st.session_state:
+    st.session_state.admin_authenticated = False
 
 cfg = st.session_state.hub_config
 uv = st.session_state.uv
 
 with st.sidebar:
-    st.title("⚙️ Configurações")
-    if st.session_state.get("db_ok"):
-        st.success("Salvamento permanente ativo")
+    if not st.session_state.admin_authenticated:
+        st.markdown("### 🔐 Área administrativa")
+        st.caption("Digite a senha para acessar as configurações do SETTA HUB.")
+
+        with st.form("admin_login", clear_on_submit=False):
+            admin_password = st.text_input(
+                "Senha",
+                type="password",
+                placeholder="Digite a senha",
+                autocomplete="current-password",
+            )
+            login = st.form_submit_button(
+                "Acessar configurações",
+                use_container_width=True,
+                type="primary",
+            )
+
+        if login:
+            if admin_password_valid(admin_password):
+                st.session_state.admin_authenticated = True
+                st.rerun()
+            else:
+                st.error("Senha incorreta.")
     else:
-        st.warning("Modo temporário: banco indisponível")
+        if st.button("🔒 Sair das configurações", use_container_width=True):
+            st.session_state.admin_authenticated = False
+            st.rerun()
+        st.title("⚙️ Configurações")
+        if st.session_state.get("db_ok"):
+            st.success("Salvamento permanente ativo")
+        else:
+            st.warning("Modo temporário: banco indisponível")
 
-    if st.session_state.notice:
-        st.info(st.session_state.notice)
-        st.session_state.notice = ""
+        if st.session_state.notice:
+            st.info(st.session_state.notice)
+            st.session_state.notice = ""
 
-    with st.form("cfg"):
-        st.subheader("Identidade visual")
-        logo_top_upload = st.file_uploader(
-            "Logo do menu superior",
-            type=["png", "jpg", "jpeg", "webp"],
-            key=f"lt{uv}",
-            help="Ajuste automático sem deformar.",
-        )
-        logo_footer_upload = st.file_uploader(
-            "Logo inferior",
-            type=["png", "jpg", "jpeg", "webp"],
-            key=f"lf{uv}",
-        )
-        hero_upload = st.file_uploader(
-            "Imagem principal",
-            type=["png", "jpg", "jpeg", "webp"],
-            key=f"h{uv}",
-        )
+        with st.form("cfg"):
+            st.subheader("Identidade visual")
+            logo_top_upload = st.file_uploader(
+                "Logo do menu superior",
+                type=["png", "jpg", "jpeg", "webp"],
+                key=f"lt{uv}",
+                help="Ajuste automático sem deformar.",
+            )
+            logo_footer_upload = st.file_uploader(
+                "Logo inferior",
+                type=["png", "jpg", "jpeg", "webp"],
+                key=f"lf{uv}",
+            )
+            hero_upload = st.file_uploader(
+                "Imagem principal",
+                type=["png", "jpg", "jpeg", "webp"],
+                key=f"h{uv}",
+            )
 
-        clear_top = st.checkbox("Remover logo superior e usar texto Setta")
-        clear_footer = st.checkbox("Usar logo inferior padrão")
-        clear_hero = st.checkbox("Usar imagem principal padrão")
+            clear_top = st.checkbox("Remover logo superior e usar texto Setta")
+            clear_footer = st.checkbox("Usar logo inferior padrão")
+            clear_hero = st.checkbox("Usar imagem principal padrão")
 
-        if cfg.get("logo_top"):
-            st.caption("Logo superior atual")
-            st.image(cfg["logo_top"], width=150)
+            if cfg.get("logo_top"):
+                st.caption("Logo superior atual")
+                st.image(cfg["logo_top"], width=150)
 
-        st.divider()
-        st.subheader("Textos da página")
-        titulo = st.text_input("Título", cfg["titulo"])
-        subtitulo = st.text_input("Subtítulo", cfg["subtitulo"])
-        descricao = st.text_area("Descrição", cfg["descricao"], height=90)
-        slogan = st.text_area("Texto sobre a imagem", cfg["slogan"], height=90)
-        usuario = st.text_input("Usuário do cabeçalho", cfg["usuario"])
-        rodape_esquerdo = st.text_input("Texto inferior esquerdo", cfg["rodape_esquerdo"])
-        rodape_direito = st.text_input("Texto inferior direito", cfg["rodape_direito"])
+            st.divider()
+            st.subheader("Textos da página")
+            titulo = st.text_input("Título", cfg["titulo"])
+            subtitulo = st.text_input("Subtítulo", cfg["subtitulo"])
+            descricao = st.text_area("Descrição", cfg["descricao"], height=90)
+            slogan = st.text_area("Texto sobre a imagem", cfg["slogan"], height=90)
+            usuario = st.text_input("Usuário do cabeçalho", cfg["usuario"])
+            rodape_esquerdo = st.text_input("Texto inferior esquerdo", cfg["rodape_esquerdo"])
+            rodape_direito = st.text_input("Texto inferior direito", cfg["rodape_direito"])
 
-        st.divider()
-        st.subheader("Cartões e redirecionamentos")
-        st.caption("PNG padronizado: canvas 128×128, conteúdo até 104×104 e exibição 56×56 px.")
+            st.divider()
+            st.subheader("Cartões e redirecionamentos")
+            st.caption("PNG padronizado: canvas 128×128, conteúdo até 104×104 e exibição 56×56 px.")
 
-        apps = []
-        uploads = []
-        removes = []
+            apps = []
+            uploads = []
+            removes = []
 
-        for i, app in enumerate(cfg["apps"]):
-            with st.expander(f"{i + 1}. {app.get('nome', 'Aplicativo')}"):
-                nome = st.text_input("Nome do cartão", app.get("nome", ""), key=f"n{i}_{uv}")
-                desc = st.text_input("Descrição", app.get("descricao", ""), key=f"d{i}_{uv}")
-                status = st.text_input("Status", app.get("status", "Ativo"), key=f"s{i}_{uv}")
-                url = st.text_input("Link de destino", app.get("url", "#"), key=f"u{i}_{uv}")
-                upload = st.file_uploader(
-                    "Ícone PNG",
-                    type=["png"],
-                    key=f"p{i}_{uv}",
-                    help="Máximo 2 MB. Redimensionamento automático.",
+            for i, app in enumerate(cfg["apps"]):
+                with st.expander(f"{i + 1}. {app.get('nome', 'Aplicativo')}"):
+                    nome = st.text_input("Nome do cartão", app.get("nome", ""), key=f"n{i}_{uv}")
+                    desc = st.text_input("Descrição", app.get("descricao", ""), key=f"d{i}_{uv}")
+                    status = st.text_input("Status", app.get("status", "Ativo"), key=f"s{i}_{uv}")
+                    url = st.text_input("Link de destino", app.get("url", "#"), key=f"u{i}_{uv}")
+                    upload = st.file_uploader(
+                        "Ícone PNG",
+                        type=["png"],
+                        key=f"p{i}_{uv}",
+                        help="Máximo 2 MB. Redimensionamento automático.",
+                    )
+                    remove = st.checkbox("Remover PNG e voltar para emoji", key=f"r{i}_{uv}")
+                    emoji = st.text_input("Emoji de fallback", app.get("icone", "🔗"), key=f"e{i}_{uv}")
+
+                    if app.get("icone_png"):
+                        st.image(app["icone_png"], width=72)
+
+                apps.append(
+                    {
+                        "nome": nome,
+                        "descricao": desc,
+                        "icone": emoji,
+                        "icone_png": app.get("icone_png", ""),
+                        "status": status,
+                        "url": url,
+                    }
                 )
-                remove = st.checkbox("Remover PNG e voltar para emoji", key=f"r{i}_{uv}")
-                emoji = st.text_input("Emoji de fallback", app.get("icone", "🔗"), key=f"e{i}_{uv}")
+                uploads.append(upload)
+                removes.append(remove)
 
-                if app.get("icone_png"):
-                    st.image(app["icone_png"], width=72)
+            apply_changes = st.form_submit_button("Salvar alterações", use_container_width=True, type="primary")
 
-            apps.append(
-                {
-                    "nome": nome,
-                    "descricao": desc,
-                    "icone": emoji,
-                    "icone_png": app.get("icone_png", ""),
-                    "status": status,
-                    "url": url,
-                }
-            )
-            uploads.append(upload)
-            removes.append(remove)
+        if apply_changes:
+            try:
+                new_cfg = copy.deepcopy(cfg)
 
-        apply_changes = st.form_submit_button("Salvar alterações", use_container_width=True, type="primary")
+                if clear_top:
+                    new_cfg["logo_top"] = ""
+                elif logo_top_upload:
+                    new_cfg["logo_top"] = data_uri(logo_top_upload, 3)
 
-    if apply_changes:
-        try:
-            new_cfg = copy.deepcopy(cfg)
+                if clear_footer:
+                    new_cfg["logo_footer"] = ""
+                elif logo_footer_upload:
+                    new_cfg["logo_footer"] = data_uri(logo_footer_upload, 3)
 
-            if clear_top:
-                new_cfg["logo_top"] = ""
-            elif logo_top_upload:
-                new_cfg["logo_top"] = data_uri(logo_top_upload, 3)
+                if clear_hero:
+                    new_cfg["hero_image"] = DEFAULT_CONFIG["hero_image"]
+                elif hero_upload:
+                    new_cfg["hero_image"] = data_uri(hero_upload, 4)
 
-            if clear_footer:
-                new_cfg["logo_footer"] = ""
-            elif logo_footer_upload:
-                new_cfg["logo_footer"] = data_uri(logo_footer_upload, 3)
+                for i, app in enumerate(apps):
+                    if removes[i]:
+                        app["icone_png"] = ""
+                    elif uploads[i]:
+                        app["icone_png"] = icon_png(uploads[i])
 
-            if clear_hero:
-                new_cfg["hero_image"] = DEFAULT_CONFIG["hero_image"]
-            elif hero_upload:
-                new_cfg["hero_image"] = data_uri(hero_upload, 4)
+                new_cfg.update(
+                    titulo=titulo,
+                    subtitulo=subtitulo,
+                    descricao=descricao,
+                    slogan=slogan,
+                    usuario=usuario,
+                    rodape_esquerdo=rodape_esquerdo,
+                    rodape_direito=rodape_direito,
+                    apps=apps,
+                )
+                save_db(new_cfg)
+                st.session_state.hub_config = new_cfg
+                st.session_state.db_ok = True
+                st.session_state.uv += 1
+                st.session_state.notice = "Alterações salvas permanentemente."
+                st.rerun()
+            except Exception as exc:
+                st.error(f"Não foi possível salvar: {exc}")
 
-            for i, app in enumerate(apps):
-                if removes[i]:
-                    app["icone_png"] = ""
-                elif uploads[i]:
-                    app["icone_png"] = icon_png(uploads[i])
+        if st.button("Recarregar do banco", use_container_width=True):
+            try:
+                st.session_state.hub_config = load_db()
+                st.session_state.uv += 1
+                st.session_state.db_ok = True
+                st.session_state.notice = "Dados recarregados."
+                st.rerun()
+            except Exception as exc:
+                st.error(str(exc))
 
-            new_cfg.update(
-                titulo=titulo,
-                subtitulo=subtitulo,
-                descricao=descricao,
-                slogan=slogan,
-                usuario=usuario,
-                rodape_esquerdo=rodape_esquerdo,
-                rodape_direito=rodape_direito,
-                apps=apps,
-            )
-            save_db(new_cfg)
-            st.session_state.hub_config = new_cfg
-            st.session_state.db_ok = True
-            st.session_state.uv += 1
-            st.session_state.notice = "Alterações salvas permanentemente."
-            st.rerun()
-        except Exception as exc:
-            st.error(f"Não foi possível salvar: {exc}")
-
-    if st.button("Recarregar do banco", use_container_width=True):
-        try:
-            st.session_state.hub_config = load_db()
-            st.session_state.uv += 1
-            st.session_state.db_ok = True
-            st.session_state.notice = "Dados recarregados."
-            st.rerun()
-        except Exception as exc:
-            st.error(str(exc))
-
-    if st.button("Restaurar tudo ao padrão", use_container_width=True):
-        try:
-            default_cfg = copy.deepcopy(DEFAULT_CONFIG)
-            save_db(default_cfg)
-            st.session_state.hub_config = default_cfg
-            st.session_state.uv += 1
-            st.session_state.notice = "Padrão restaurado."
-            st.rerun()
-        except Exception as exc:
-            st.error(str(exc))
+        if st.button("Restaurar tudo ao padrão", use_container_width=True):
+            try:
+                default_cfg = copy.deepcopy(DEFAULT_CONFIG)
+                save_db(default_cfg)
+                st.session_state.hub_config = default_cfg
+                st.session_state.uv += 1
+                st.session_state.notice = "Padrão restaurado."
+                st.rerun()
+            except Exception as exc:
+                st.error(str(exc))
 
 cfg = st.session_state.hub_config
 
@@ -335,10 +382,18 @@ CSS = r'''<style>
 }
 
 *{box-sizing:border-box}
-html,body,[data-testid="stAppViewContainer"]{min-height:100%}
+html,body,[data-testid="stAppViewContainer"]{min-height:100%;width:100%;max-width:100%;overflow-x:hidden}
 .stApp{background:linear-gradient(180deg,#fff,#F8FAFD)}
 
 header[data-testid="stHeader"]{
+  position:fixed!important;
+  top:0!important;
+  left:0!important;
+  right:0!important;
+  width:100vw!important;
+  max-width:none!important;
+  margin:0!important;
+  border-radius:0!important;
   background:var(--y)!important;
   height:64px!important;
   border-bottom:1px solid rgba(0,0,0,.06)!important;
@@ -353,12 +408,15 @@ header[data-testid="stHeader"] *{color:var(--ink)!important}
 
 .hub-header-content{
   position:fixed;
-  top:0;left:0;right:0;
+  top:0;
+  left:0;
+  right:auto;
+  width:100vw;
+  max-width:none;
   height:64px;
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  padding:0 clamp(170px,12vw,230px) 0 clamp(62px,4vw,78px);
+  padding:0 0 0 clamp(62px,4vw,78px);
   z-index:100002;
   pointer-events:none;
 }
@@ -373,8 +431,11 @@ header[data-testid="stHeader"] *{color:var(--ink)!important}
 .brand-slot{width:170px;height:50px;display:flex;align-items:center;overflow:hidden}
 .brand-text{color:var(--ink);font-size:clamp(34px,2.2vw,40px);font-style:italic;font-weight:900;letter-spacing:-3px}
 .brand-logo{width:170px;height:48px;max-width:170px;max-height:48px;object-fit:contain;object-position:left center}
-.user{color:var(--ink);font-size:clamp(13px,.85vw,15px);font-weight:700;display:flex;gap:10px;align-items:center;white-space:nowrap}
-.user-badge{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#fff;border:1px solid rgba(30,35,46,.2)}
+.user{position:absolute;top:50%;right:220px;transform:translateY(-50%);color:var(--ink);font-size:clamp(13px,.85vw,15px);font-weight:700;display:flex;gap:8px;align-items:center;white-space:nowrap}
+.user-badge{position:relative;width:32px;height:32px;border-radius:50%;background:#fff;border:1px solid rgba(30,35,46,.16);box-shadow:0 2px 8px rgba(20,35,58,.08);flex:0 0 32px}
+.user-badge:before{content:"";position:absolute;top:7px;left:50%;width:8px;height:8px;transform:translateX(-50%);border-radius:50%;background:#23324A}
+.user-badge:after{content:"";position:absolute;left:50%;bottom:6px;width:15px;height:8px;transform:translateX(-50%);border-radius:9px 9px 5px 5px;background:#23324A}
+.user-chevron{font-size:14px;margin-left:1px}
 
 .hero{
   display:grid;
@@ -451,7 +512,7 @@ header[data-testid="stHeader"] *{color:var(--ink)!important}
 }
 @media (max-width:1320px){
   :root{--page-pad:clamp(20px,3vw,42px)}
-  .hub-header-content{padding-right:170px}
+  .user{right:175px}
   .hero{grid-template-columns:minmax(0,.95fr) minmax(380px,1.05fr);gap:22px}
   .app-card{padding-left:18px;padding-right:18px}
   .card-content{padding-right:78px}
@@ -522,7 +583,7 @@ for app in cfg["apps"]:
 
 page = (
     f'<div class="hub-header-content"><div class="brand-slot">{logo_top}</div>'
-    f'<div class="user"><div class="user-badge">●</div><span>{esc(cfg["usuario"])}</span><span>⌄</span></div></div>'
+    f'<div class="user"><div class="user-badge"></div><span>{esc(cfg["usuario"])}</span><span class="user-chevron">⌄</span></div></div>'
     f'<div class="page-root"><section class="hero"><div class="hero-copy">'
     f'<div class="hero-eyebrow">BEM-VINDO(A) AO</div>'
     f'<h1>{esc(cfg["titulo"])}</h1><h2>{esc(cfg["subtitulo"])}</h2>'
