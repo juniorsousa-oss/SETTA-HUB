@@ -32,6 +32,7 @@ DEFAULT_CONFIG = {
     "descricao": "Soluções integradas que impulsionam a eficiência,\nconectam pessoas e constroem grandes resultados.",
     "slogan": "TECNOLOGIA\nQUE CONSTRÓI\nO AMANHÃ",
     "usuario": "Olá, Usuário",
+    "user_avatar": "",
     "rodape_esquerdo": "TECNOLOGIA A SERVIÇO DE GRANDES RESULTADOS",
     "rodape_direito": "JUNTOS, CONSTRUÍMOS O AMANHÃ",
     "apps": [
@@ -69,6 +70,7 @@ def merge_config(saved):
         "descricao",
         "slogan",
         "usuario",
+        "user_avatar",
         "rodape_esquerdo",
         "rodape_direito",
     ):
@@ -141,6 +143,24 @@ def icon_png(uploaded_file):
     canvas.alpha_composite(image, ((128 - image.width) // 2, (128 - image.height) // 2))
     output = BytesIO()
     canvas.save(output, "PNG", optimize=True)
+    return "data:image/png;base64," + base64.b64encode(output.getvalue()).decode()
+
+
+def user_avatar_image(uploaded_file):
+    if uploaded_file is None:
+        return ""
+    if uploaded_file.size > 2 * 1024 * 1024:
+        raise ValueError("Imagem do usuário acima de 2 MB.")
+
+    image = Image.open(BytesIO(uploaded_file.getvalue())).convert("RGBA")
+    side = min(image.width, image.height)
+    left = (image.width - side) // 2
+    top = (image.height - side) // 2
+    image = image.crop((left, top, left + side, top + side))
+    image = image.resize((128, 128), Image.Resampling.LANCZOS)
+
+    output = BytesIO()
+    image.save(output, "PNG", optimize=True)
     return "data:image/png;base64," + base64.b64encode(output.getvalue()).decode()
 
 
@@ -258,14 +278,25 @@ with st.sidebar:
                 type=["png", "jpg", "jpeg", "webp"],
                 key=f"h{uv}",
             )
+            user_avatar_upload = st.file_uploader(
+                "Imagem do usuário",
+                type=["png", "jpg", "jpeg", "webp"],
+                key=f"avatar{uv}",
+                help="A imagem será recortada automaticamente e exibida dentro do círculo do usuário.",
+            )
 
             clear_top = st.checkbox("Remover logo superior e usar texto Setta")
             clear_footer = st.checkbox("Usar logo inferior padrão")
             clear_hero = st.checkbox("Usar imagem principal padrão")
+            clear_user_avatar = st.checkbox("Remover imagem do usuário e usar ícone padrão")
 
             if cfg.get("logo_top"):
                 st.caption("Logo superior atual")
                 st.image(cfg["logo_top"], width=150)
+
+            if cfg.get("user_avatar"):
+                st.caption("Imagem atual do usuário")
+                st.image(cfg["user_avatar"], width=72)
 
             st.divider()
             st.subheader("Textos da página")
@@ -336,6 +367,11 @@ with st.sidebar:
                     new_cfg["hero_image"] = DEFAULT_CONFIG["hero_image"]
                 elif hero_upload:
                     new_cfg["hero_image"] = data_uri(hero_upload, 4)
+
+                if clear_user_avatar:
+                    new_cfg["user_avatar"] = ""
+                elif user_avatar_upload:
+                    new_cfg["user_avatar"] = user_avatar_image(user_avatar_upload)
 
                 for i, app in enumerate(apps):
                     if removes[i]:
@@ -448,7 +484,7 @@ header[data-testid="stHeader"] *{color:var(--ink)!important}
 .user{position:absolute;top:50%;right:clamp(175px,12vw,230px);transform:translateY(-50%);color:var(--ink);font-size:clamp(13px,.85vw,15px);font-weight:700;display:flex;gap:8px;align-items:center;white-space:nowrap;line-height:1}
 .user-badge{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid rgba(30,35,46,.16);box-shadow:0 2px 8px rgba(20,35,58,.08);flex:0 0 32px;overflow:hidden}
 .user-badge svg{display:block;width:18px;height:18px;min-width:18px;min-height:18px;fill:#23324A;stroke:none}
-.user-chevron{font-size:14px;line-height:1;margin-left:1px;flex:0 0 auto}
+.user-badge img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:50%}
 
 /* Botão nativo do Streamlit Community Cloud: Gerenciar aplicativo */
 [data-testid="manage_app_button"],
@@ -687,6 +723,12 @@ logo_footer = (
     else '<div class="footer-brand-text">Setta</div>'
 )
 
+user_avatar_html = (
+    f'<img src="{cfg["user_avatar"]}" alt="Usuário">'
+    if cfg.get("user_avatar")
+    else '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 20c.45-4.05 3.18-6.2 7.5-6.2s7.05 2.15 7.5 6.2H4.5z"></path></svg>'
+)
+
 
 def icon_html(app):
     if app.get("icone_png"):
@@ -708,7 +750,7 @@ for app in cfg["apps"]:
 
 page = (
     f'<div class="hub-header-content"><div class="brand-slot">{logo_top}</div>'
-    f'<div class="user"><div class="user-badge"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 20c.45-4.05 3.18-6.2 7.5-6.2s7.05 2.15 7.5 6.2H4.5z"></path></svg></div><span>{esc(cfg["usuario"])}</span><span class="user-chevron">⌄</span></div></div>'
+    f'<div class="user"><div class="user-badge">{user_avatar_html}</div><span>{esc(cfg["usuario"])}</span></div></div>'
     f'<div class="page-root"><section class="hero"><div class="hero-copy">'
     f'<div class="hero-eyebrow">BEM-VINDO(A) AO</div>'
     f'<h1>{esc(cfg["titulo"])}</h1><h2>{esc(cfg["subtitulo"])}</h2>'
