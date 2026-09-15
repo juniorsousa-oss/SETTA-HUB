@@ -1,4 +1,4 @@
-name: Apply approved SETTA HUB redesign
+name: Apply SETTA HUB header and admin access fixes
 
 on:
   push:
@@ -10,201 +10,191 @@ permissions:
   contents: write
 
 jobs:
-  redesign:
+  patch:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Aplica layout visual aprovado
+      - name: Corrige header, avatar e protege configurações por senha
         run: |
           python - <<'PY'
           from pathlib import Path
-          import re
 
           path = Path('streamlit_app.py')
           text = path.read_text(encoding='utf-8')
 
-          text = text.replace('height:68px!important;', 'height:64px!important;', 1)
-          text = text.replace('height:68px;\n  display:flex;', 'height:64px;\n  display:flex;', 1)
-          text = text.replace('padding-top:68px;', 'padding-top:64px;', 1)
-          text = text.replace('width:180px;height:58px;display:flex;align-items:center;overflow:hidden', 'width:170px;height:50px;display:flex;align-items:center;overflow:hidden', 1)
-          text = text.replace('font-size:clamp(35px,2.35vw,43px)', 'font-size:clamp(34px,2.2vw,40px)', 1)
-          text = text.replace('width:180px;height:54px;max-width:180px;max-height:54px', 'width:170px;height:48px;max-width:170px;max-height:48px', 1)
-          text = text.replace('width:34px;height:34px', 'width:30px;height:30px', 1)
+          # 1) Imports e estado inicial da barra lateral.
+          if 'import hashlib\n' not in text:
+              text = text.replace('import html\n', 'import html\nimport hashlib\nimport hmac\n', 1)
+          text = text.replace('initial_sidebar_state="expanded"', 'initial_sidebar_state="collapsed"', 1)
 
-          hero_pattern = re.compile(r'\.hero\{.*?\.hero-slogan:after\{.*?\}\n', re.S)
-          hero_new = r'''.hero{
-            display:grid;
-            grid-template-columns:minmax(0,.95fr) minmax(420px,1.05fr);
-            gap:clamp(24px,2.2vw,40px);
-            padding:clamp(22px,2.4vw,34px) var(--page-pad) clamp(16px,1.8vw,26px);
-            background:#fff;
+          # 2) Autenticação administrativa: aceita segredo do Streamlit Cloud;
+          #    se não existir, usa apenas um hash seguro da senha temporária.
+          esc_marker = '''def esc(value):
+              return html.escape(str(value or ""), quote=True)
+          '''
+          auth_block = '''def esc(value):
+              return html.escape(str(value or ""), quote=True)
+
+
+          ADMIN_PASSWORD_FALLBACK_HASH = "c554a2703714f35c0c629ee4e73f84fd360220d6e3b7c65ba81b29343affc50d"
+
+
+          def admin_password_valid(password):
+              try:
+                  configured = str(st.secrets.get("SETTA_HUB_ADMIN_PASSWORD", "")).strip()
+              except Exception:
+                  configured = ""
+
+              if configured:
+                  return hmac.compare_digest(str(password), configured)
+
+              digest = hashlib.sha256(str(password).encode("utf-8")).hexdigest()
+              return hmac.compare_digest(digest, ADMIN_PASSWORD_FALLBACK_HASH)
+          '''
+          if 'ADMIN_PASSWORD_FALLBACK_HASH' not in text:
+              if esc_marker not in text:
+                  raise SystemExit('Função esc não encontrada')
+              text = text.replace(esc_marker, auth_block, 1)
+
+          notice_marker = '''if "notice" not in st.session_state:
+              st.session_state.notice = ""
+          '''
+          auth_state = '''if "notice" not in st.session_state:
+              st.session_state.notice = ""
+          if "admin_authenticated" not in st.session_state:
+              st.session_state.admin_authenticated = False
+          '''
+          if 'if "admin_authenticated" not in st.session_state:' not in text:
+              if notice_marker not in text:
+                  raise SystemExit('Estado notice não encontrado')
+              text = text.replace(notice_marker, auth_state, 1)
+
+          # 3) Mantém a página principal pública e pede somente senha ao abrir Configurações.
+          sidebar_start = text.index('with st.sidebar:\n')
+          sidebar_end = text.index('\ncfg = st.session_state.hub_config\n\nCSS =', sidebar_start)
+          old_sidebar = text[sidebar_start:sidebar_end]
+
+          if 'Área administrativa' not in old_sidebar:
+              old_body = old_sidebar[len('with st.sidebar:\n'):]
+              indented_body = '\n'.join(('    ' + line) if line else line for line in old_body.splitlines())
+              new_sidebar = '''with st.sidebar:
+              if not st.session_state.admin_authenticated:
+                  st.markdown("### 🔐 Área administrativa")
+                  st.caption("Digite a senha para acessar as configurações do SETTA HUB.")
+
+                  with st.form("admin_login", clear_on_submit=False):
+                      admin_password = st.text_input(
+                          "Senha",
+                          type="password",
+                          placeholder="Digite a senha",
+                          autocomplete="current-password",
+                      )
+                      login = st.form_submit_button(
+                          "Acessar configurações",
+                          use_container_width=True,
+                          type="primary",
+                      )
+
+                  if login:
+                      if admin_password_valid(admin_password):
+                          st.session_state.admin_authenticated = True
+                          st.rerun()
+                      else:
+                          st.error("Senha incorreta.")
+              else:
+                  if st.button("🔒 Sair das configurações", use_container_width=True):
+                      st.session_state.admin_authenticated = False
+                      st.rerun()
+          ''' + indented_body + '\n'
+              text = text[:sidebar_start] + new_sidebar + text[sidebar_end:]
+
+          # 4) Header amarelo ocupa sempre toda a largura, inclusive com sidebar recolhida.
+          text = text.replace(
+              'html,body,[data-testid="stAppViewContainer"]{min-height:100%}',
+              'html,body,[data-testid="stAppViewContainer"]{min-height:100%;width:100%;max-width:100%;overflow-x:hidden}',
+              1,
+          )
+
+          old_header = '''header[data-testid="stHeader"]{
+            background:var(--y)!important;
+            height:64px!important;
+            border-bottom:1px solid rgba(0,0,0,.06)!important;
+            z-index:100000!important;
+          }'''
+          new_header = '''header[data-testid="stHeader"]{
+            position:fixed!important;
+            top:0!important;
+            left:0!important;
+            right:0!important;
+            width:100vw!important;
+            max-width:none!important;
+            margin:0!important;
+            border-radius:0!important;
+            background:var(--y)!important;
+            height:64px!important;
+            border-bottom:1px solid rgba(0,0,0,.06)!important;
+            z-index:100000!important;
+          }'''
+          if old_header in text:
+              text = text.replace(old_header, new_header, 1)
+
+          old_hub = '''.hub-header-content{
+            position:fixed;
+            top:0;left:0;right:0;
+            height:64px;
+            display:flex;
             align-items:center;
-          }
-          .hero-copy{padding:0;background:transparent;align-self:center}
-          .hero-eyebrow{margin-bottom:8px;color:#73809B;font-size:clamp(10px,.66vw,12px);font-weight:800;letter-spacing:4px;text-transform:uppercase}
-          .hero h1{margin:0;color:var(--ink);font-size:clamp(34px,2.55vw,46px);line-height:1.02;letter-spacing:-2px;font-weight:900}
-          .hero h2{margin:7px 0 0;color:#66728B;font-size:clamp(19px,1.42vw,25px);line-height:1.2;font-weight:500}
-          .hero p{margin:clamp(12px,1vw,16px) 0 0;color:#73809B;font-size:clamp(12px,.84vw,14px);line-height:1.55;max-width:560px}
-          .hero-accent{width:64px;height:4px;background:var(--y2);border-radius:10px;margin-top:16px}
-          .hero-image{height:clamp(185px,21vh,225px);min-height:185px;background-size:cover;background-position:center 48%;position:relative;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(27,41,68,.08)}
-          .hero-image:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 48%,rgba(9,21,45,.08) 100%);pointer-events:none}
-          .hero-slogan{position:absolute;right:5%;bottom:18px;max-width:190px;color:white;text-shadow:0 1px 8px rgba(0,0,0,.35);font-size:clamp(11px,.75vw,13px);letter-spacing:1px;line-height:1.25;font-weight:800;z-index:2}
-          .hero-slogan:after{content:"";display:block;width:34px;height:3px;background:var(--y2);margin-top:9px;border-radius:8px}
-          '''
-          text, n = hero_pattern.subn(hero_new, text, count=1)
-          if n != 1:
-              raise SystemExit('Bloco hero não encontrado')
+            justify-content:space-between;
+            padding:0 clamp(170px,12vw,230px) 0 clamp(62px,4vw,78px);
+            z-index:100002;
+            pointer-events:none;
+          }'''
+          new_hub = '''.hub-header-content{
+            position:fixed;
+            top:0;
+            left:0;
+            right:auto;
+            width:100vw;
+            max-width:none;
+            height:64px;
+            display:flex;
+            align-items:center;
+            padding:0 0 0 clamp(62px,4vw,78px);
+            z-index:100002;
+            pointer-events:none;
+          }'''
+          if old_hub in text:
+              text = text.replace(old_hub, new_hub, 1)
 
-          cards_css_pattern = re.compile(r'\.apps-wrap\{.*?\.access\{.*?\}\n', re.S)
-          cards_css_new = r'''.apps-wrap{width:100%;padding:clamp(8px,.8vw,12px) var(--page-pad) clamp(14px,1.3vw,22px);position:relative;z-index:5;flex:1 0 auto}
-          .apps-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1vw,18px)}
-          .app-card{position:relative;min-height:150px;display:flex;flex-direction:column;justify-content:space-between;text-decoration:none!important;color:inherit!important;background:radial-gradient(circle at 108% 112%,rgba(253,195,59,.13) 0 28%,transparent 29%),#fff;border:1px solid var(--line);border-radius:15px;padding:20px 22px 17px;box-shadow:0 6px 18px rgba(44,62,92,.045);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
-          .app-card:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(44,62,92,.10);border-color:#D9DEE7}
-          .card-content{display:grid;grid-template-columns:64px minmax(0,1fr);gap:16px;align-items:start;padding-right:90px}
-          .app-icon{width:64px;height:64px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:#FFF7E2;overflow:hidden;flex:0 0 64px}
-          .app-icon img{width:50px;height:50px;object-fit:contain}
-          .app-icon-emoji{font-size:32px}
-          .card-copy{min-width:0;padding-top:4px}
-          .status{position:absolute;top:18px;right:20px;display:flex;align-items:center;gap:7px;background:#E9F9EF;color:#15883F;font-size:clamp(10px,.7vw,12px);font-weight:700;border-radius:999px;padding:6px 10px;white-space:nowrap}
-          .dot{width:9px;height:9px;border-radius:50%;background:var(--green);flex:0 0 9px}
-          .app-title{color:#111A36;font-weight:900;font-size:clamp(18px,1.08vw,21px);line-height:1.16}
-          .app-desc{margin-top:5px;color:#71809B;font-size:clamp(12px,.78vw,14px);line-height:1.35;max-width:95%}
-          .access{margin-top:14px;color:#F1A000;font-size:clamp(13px,.82vw,15px);font-weight:800;display:flex;align-items:center;gap:8px}
-          .access-arrow{font-size:18px;line-height:1;transition:transform .18s ease}
-          .app-card:hover .access-arrow{transform:translateX(3px)}
-          '''
-          text, n = cards_css_pattern.subn(cards_css_new, text, count=1)
-          if n != 1:
-              raise SystemExit('Bloco de cards não encontrado')
+          old_user = '.user{color:var(--ink);font-size:clamp(13px,.85vw,15px);font-weight:700;display:flex;gap:10px;align-items:center;white-space:nowrap}\n.user-badge{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#fff;border:1px solid rgba(30,35,46,.2)}'
+          new_user = '''.user{position:absolute;top:50%;right:220px;transform:translateY(-50%);color:var(--ink);font-size:clamp(13px,.85vw,15px);font-weight:700;display:flex;gap:8px;align-items:center;white-space:nowrap}
+          .user-badge{position:relative;width:32px;height:32px;border-radius:50%;background:#fff;border:1px solid rgba(30,35,46,.16);box-shadow:0 2px 8px rgba(20,35,58,.08);flex:0 0 32px}
+          .user-badge:before{content:"";position:absolute;top:7px;left:50%;width:8px;height:8px;transform:translateX(-50%);border-radius:50%;background:#23324A}
+          .user-badge:after{content:"";position:absolute;left:50%;bottom:6px;width:15px;height:8px;transform:translateX(-50%);border-radius:9px 9px 5px 5px;background:#23324A}
+          .user-chevron{font-size:14px;margin-left:1px}'''
+          if old_user in text:
+              text = text.replace(old_user, new_user, 1)
 
-          footer_pattern = re.compile(r'\.page-footer\{.*?\.footer-line\{.*?\}\n', re.S)
-          footer_new = r'''.page-footer{min-height:40px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 var(--page-pad);background:#fff;color:#97A2B8;font-size:clamp(8px,.58vw,10px);letter-spacing:1.8px;text-transform:uppercase;margin-top:auto}
-          .footer-brand{display:flex;align-items:center;gap:10px;min-width:0}
-          .footer-logo-slot{width:64px;height:24px;display:flex;align-items:center;flex:0 0 64px}
-          .footer-brand-text{color:var(--ink);font-size:18px;font-style:italic;font-weight:900}
-          .footer-logo{width:64px;height:24px;object-fit:contain}
-          .footer-line{width:28px;height:3px;background:var(--y2);display:inline-block;margin-left:9px}
-          '''
-          text, n = footer_pattern.subn(footer_new, text, count=1)
-          if n != 1:
-              raise SystemExit('Rodapé não encontrado')
+          text = text.replace('.hub-header-content{padding-right:170px}', '.user{right:175px}', 1)
 
-          media_pattern = re.compile(r'@media \(min-width:1200px\) and \(max-height:900px\)\{.*?</style>', re.S)
-          media_new = r'''@media (min-width:1200px) and (max-height:900px){
-            header[data-testid="stHeader"]{height:58px!important}
-            .hub-header-content{height:58px}
-            .page-root{padding-top:58px}
-            .brand-slot{height:46px}
-            .brand-logo{height:43px;max-height:43px}
-            .brand-text{font-size:34px}
-            .user-badge{width:28px;height:28px}
-            .user{font-size:12px}
-            .hero{padding-top:18px;padding-bottom:12px}
-            .hero-image{height:178px;min-height:178px}
-            .hero h1{font-size:36px}
-            .hero h2{font-size:20px}
-            .hero p{font-size:12px;margin-top:10px}
-            .hero-accent{margin-top:12px;height:3px}
-            .apps-wrap{padding-top:6px;padding-bottom:10px}
-            .apps-grid{gap:12px}
-            .app-card{min-height:140px;padding:16px 18px 14px}
-            .card-content{grid-template-columns:58px minmax(0,1fr);gap:13px;padding-right:82px}
-            .app-icon{width:58px;height:58px;flex-basis:58px}
-            .app-icon img{width:46px;height:46px}
-            .app-title{font-size:18px}
-            .app-desc{font-size:12px}
-            .status{top:15px;right:16px;padding:5px 9px}
-            .access{margin-top:10px;font-size:13px}
-            .page-footer{min-height:34px}
-            .footer-logo-slot{height:20px}
-            .footer-logo{height:20px}
-            .footer-brand-text{font-size:16px}
-          }
-          @media (max-width:1320px){
-            :root{--page-pad:clamp(20px,3vw,42px)}
-            .hub-header-content{padding-right:170px}
-            .hero{grid-template-columns:minmax(0,.95fr) minmax(380px,1.05fr);gap:22px}
-            .app-card{padding-left:18px;padding-right:18px}
-            .card-content{padding-right:78px}
-          }
-          @media (max-width:1120px){
-            .apps-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-            .user{display:none}
-            .hero{grid-template-columns:1fr 1fr}
-            .hero h1{font-size:36px}
-          }
-          @media (max-width:820px){
-            .hero{grid-template-columns:1fr;gap:18px}
-            .hero-image{height:190px}
-          }
-          @media (max-width:760px){
-            header[data-testid="stHeader"]{height:62px!important}
-            .hub-header-content{height:62px;padding:0 20px 0 62px}
-            .page-root{padding-top:62px;min-height:100dvh}
-            .brand-slot{width:145px;height:48px}
-            .brand-logo{width:145px;height:44px}
-            .brand-text{font-size:34px}
-            .hero{grid-template-columns:1fr;padding:28px 20px 16px}
-            .hero h1{font-size:32px}
-            .hero h2{font-size:19px}
-            .hero-image{height:180px;min-height:180px}
-            .apps-wrap{padding:12px 18px 18px}
-            .apps-grid{grid-template-columns:1fr}
-            .app-card{min-height:145px;padding:18px}
-            .card-content{grid-template-columns:60px minmax(0,1fr);padding-right:70px}
-            .app-icon{width:60px;height:60px;flex-basis:60px}
-            .app-icon img{width:48px;height:48px}
-            .page-footer{flex-direction:column;gap:8px;padding:10px 18px;text-align:center}
-            .footer-brand{justify-content:center;flex-wrap:wrap}
-          }
-          </style>'''
-          text, n = media_pattern.subn(media_new, text, count=1)
-          if n != 1:
-              raise SystemExit('Bloco responsivo não encontrado')
-
-          cards_markup_pattern = re.compile(r'cards = ""\nfor app in cfg\["apps"\]:.*?\n\npage = \(', re.S)
-          cards_markup_new = '''cards = ""
-          for app in cfg["apps"]:
-              cards += (
-                  f'<a class="app-card" href="{esc(safe_url(app.get("url", "#")))}" target="_blank" rel="noopener noreferrer">'
-                  f'<div class="card-content">'
-                  f'<div class="app-icon">{icon_html(app)}</div>'
-                  f'<div class="card-copy"><div class="app-title">{esc(app.get("nome", "Aplicativo"))}</div>'
-                  f'<div class="app-desc">{esc(app.get("descricao", ""))}</div></div></div>'
-                  f'<div class="status"><span class="dot"></span>{esc(app.get("status", "Ativo"))}</div>'
-                  f'<div class="access">Acessar <span class="access-arrow">→</span></div></a>'
-              )
-
-          page = ('''
-          text, n = cards_markup_pattern.subn(cards_markup_new, text, count=1)
-          if n != 1:
-              raise SystemExit('Markup dos cards não encontrado')
-
-          old_page_head = '''f'<div class="user"><div class="user-badge">●</div><span>{esc(cfg["usuario"])}</span></div></div>'
-              f'<div class="page-root"><section class="hero"><div class="hero-copy">'
-              f'<h1>{esc(cfg["titulo"])}</h1><h2>{esc(cfg["subtitulo"])}</h2>'
-              f'<p>{esc(cfg["descricao"]).replace(chr(10), "<br>")}</p></div>'
-              f'<div class="hero-image" style="background-image:url(\\'{esc(cfg["hero_image"])}\\')">'
-              f'<div class="hero-slogan">{esc(cfg["slogan"]).replace(chr(10), "<br>")}</div></div></section>'''
-          new_page_head = '''f'<div class="user"><div class="user-badge">●</div><span>{esc(cfg["usuario"])}</span><span>⌄</span></div></div>'
-              f'<div class="page-root"><section class="hero"><div class="hero-copy">'
-              f'<div class="hero-eyebrow">BEM-VINDO(A) AO</div>'
-              f'<h1>{esc(cfg["titulo"])}</h1><h2>{esc(cfg["subtitulo"])}</h2>'
-              f'<p>{esc(cfg["descricao"]).replace(chr(10), "<br>")}</p><div class="hero-accent"></div></div>'
-              f'<div class="hero-image" style="background-image:url(\\'{esc(cfg["hero_image"])}\\')">'
-              f'<div class="hero-slogan">{esc(cfg["slogan"]).replace(chr(10), "<br>")}</div></div></section>'''
-          if old_page_head not in text:
-              raise SystemExit('Cabeçalho HTML do hero não encontrado')
-          text = text.replace(old_page_head, new_page_head, 1)
+          # 5) Substitui a bolinha simples por avatar de usuário desenhado em CSS.
+          text = text.replace(
+              'f\'<div class="user"><div class="user-badge">●</div><span>{esc(cfg["usuario"])}</span><span>⌄</span></div></div>\'',
+              'f\'<div class="user"><div class="user-badge"></div><span>{esc(cfg["usuario"])}</span><span class="user-chevron">⌄</span></div></div>\'',
+              1,
+          )
 
           path.write_text(text, encoding='utf-8')
           PY
 
-      - name: Commit do redesign
+      - name: Valida sintaxe Python
+        run: python -m py_compile streamlit_app.py
+
+      - name: Commit das correções
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add streamlit_app.py
-          git diff --cached --quiet || git commit -m "Aplica redesign visual aprovado no SETTA HUB"
+          git diff --cached --quiet || git commit -m "Corrige header e protege configurações por senha"
           git push
