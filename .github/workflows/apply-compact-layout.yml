@@ -1,4 +1,4 @@
-name: Apply SETTA HUB header and admin access fixes
+name: Refine SETTA HUB admin login
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Corrige header, avatar e protege configurações por senha
+      - name: Aplica layout institucional na tela de senha
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -23,167 +23,182 @@ jobs:
           path = Path('streamlit_app.py')
           text = path.read_text(encoding='utf-8')
 
-          # 1) Imports e estado inicial da barra lateral.
-          if 'import hashlib\n' not in text:
-              text = text.replace('import html\n', 'import html\nimport hashlib\nimport hmac\n', 1)
-          text = text.replace('initial_sidebar_state="expanded"', 'initial_sidebar_state="collapsed"', 1)
+          old_login = '''    if not st.session_state.admin_authenticated:
+              st.markdown("### 🔐 Área administrativa")
+              st.caption("Digite a senha para acessar as configurações do SETTA HUB.")
 
-          # 2) Autenticação administrativa: aceita segredo do Streamlit Cloud;
-          #    se não existir, usa apenas um hash seguro da senha temporária.
-          esc_marker = '''def esc(value):
-              return html.escape(str(value or ""), quote=True)
-          '''
-          auth_block = '''def esc(value):
-              return html.escape(str(value or ""), quote=True)
+              with st.form("admin_login", clear_on_submit=False):
+                  admin_password = st.text_input(
+                      "Senha",
+                      type="password",
+                      placeholder="Digite a senha",
+                      autocomplete="current-password",
+                  )
+                  login = st.form_submit_button(
+                      "Acessar configurações",
+                      use_container_width=True,
+                      type="primary",
+                  )
 
-
-          ADMIN_PASSWORD_FALLBACK_HASH = "c554a2703714f35c0c629ee4e73f84fd360220d6e3b7c65ba81b29343affc50d"
-
-
-          def admin_password_valid(password):
-              try:
-                  configured = str(st.secrets.get("SETTA_HUB_ADMIN_PASSWORD", "")).strip()
-              except Exception:
-                  configured = ""
-
-              if configured:
-                  return hmac.compare_digest(str(password), configured)
-
-              digest = hashlib.sha256(str(password).encode("utf-8")).hexdigest()
-              return hmac.compare_digest(digest, ADMIN_PASSWORD_FALLBACK_HASH)
-          '''
-          if 'ADMIN_PASSWORD_FALLBACK_HASH' not in text:
-              if esc_marker not in text:
-                  raise SystemExit('Função esc não encontrada')
-              text = text.replace(esc_marker, auth_block, 1)
-
-          notice_marker = '''if "notice" not in st.session_state:
-              st.session_state.notice = ""
-          '''
-          auth_state = '''if "notice" not in st.session_state:
-              st.session_state.notice = ""
-          if "admin_authenticated" not in st.session_state:
-              st.session_state.admin_authenticated = False
-          '''
-          if 'if "admin_authenticated" not in st.session_state:' not in text:
-              if notice_marker not in text:
-                  raise SystemExit('Estado notice não encontrado')
-              text = text.replace(notice_marker, auth_state, 1)
-
-          # 3) Mantém a página principal pública e pede somente senha ao abrir Configurações.
-          sidebar_start = text.index('with st.sidebar:\n')
-          sidebar_end = text.index('\ncfg = st.session_state.hub_config\n\nCSS =', sidebar_start)
-          old_sidebar = text[sidebar_start:sidebar_end]
-
-          if 'Área administrativa' not in old_sidebar:
-              old_body = old_sidebar[len('with st.sidebar:\n'):]
-              indented_body = '\n'.join(('    ' + line) if line else line for line in old_body.splitlines())
-              new_sidebar = '''with st.sidebar:
-              if not st.session_state.admin_authenticated:
-                  st.markdown("### 🔐 Área administrativa")
-                  st.caption("Digite a senha para acessar as configurações do SETTA HUB.")
-
-                  with st.form("admin_login", clear_on_submit=False):
-                      admin_password = st.text_input(
-                          "Senha",
-                          type="password",
-                          placeholder="Digite a senha",
-                          autocomplete="current-password",
-                      )
-                      login = st.form_submit_button(
-                          "Acessar configurações",
-                          use_container_width=True,
-                          type="primary",
-                      )
-
-                  if login:
-                      if admin_password_valid(admin_password):
-                          st.session_state.admin_authenticated = True
-                          st.rerun()
-                      else:
-                          st.error("Senha incorreta.")
-              else:
-                  if st.button("🔒 Sair das configurações", use_container_width=True):
-                      st.session_state.admin_authenticated = False
+              if login:
+                  if admin_password_valid(admin_password):
+                      st.session_state.admin_authenticated = True
                       st.rerun()
-          ''' + indented_body + '\n'
-              text = text[:sidebar_start] + new_sidebar + text[sidebar_end:]
+                  else:
+                      st.error("Senha incorreta.")
+'''
 
-          # 4) Header amarelo ocupa sempre toda a largura, inclusive com sidebar recolhida.
-          text = text.replace(
-              'html,body,[data-testid="stAppViewContainer"]{min-height:100%}',
-              'html,body,[data-testid="stAppViewContainer"]{min-height:100%;width:100%;max-width:100%;overflow-x:hidden}',
-              1,
-          )
+          new_login = '''    if not st.session_state.admin_authenticated:
+              st.markdown(
+                  """
+                  <div class="admin-login-head">
+                    <div class="admin-login-kicker">🔐 ÁREA ADMINISTRATIVA</div>
+                    <div class="admin-login-title">Acesso às configurações</div>
+                    <div class="admin-login-subtitle">
+                      Digite a senha para liberar a personalização do SETTA HUB.
+                    </div>
+                    <div class="admin-login-accent"></div>
+                  </div>
+                  """,
+                  unsafe_allow_html=True,
+              )
 
-          old_header = '''header[data-testid="stHeader"]{
-            background:var(--y)!important;
-            height:64px!important;
-            border-bottom:1px solid rgba(0,0,0,.06)!important;
-            z-index:100000!important;
-          }'''
-          new_header = '''header[data-testid="stHeader"]{
-            position:fixed!important;
-            top:0!important;
-            left:0!important;
-            right:0!important;
-            width:100vw!important;
-            max-width:none!important;
-            margin:0!important;
-            border-radius:0!important;
-            background:var(--y)!important;
-            height:64px!important;
-            border-bottom:1px solid rgba(0,0,0,.06)!important;
-            z-index:100000!important;
-          }'''
-          if old_header in text:
-              text = text.replace(old_header, new_header, 1)
+              with st.form("admin_login", clear_on_submit=False):
+                  admin_password = st.text_input(
+                      "Senha",
+                      type="password",
+                      placeholder="Digite a senha administrativa",
+                      autocomplete="current-password",
+                  )
+                  login = st.form_submit_button(
+                      "Entrar nas configurações",
+                      use_container_width=True,
+                      type="primary",
+                  )
 
-          old_hub = '''.hub-header-content{
-            position:fixed;
-            top:0;left:0;right:0;
-            height:64px;
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            padding:0 clamp(170px,12vw,230px) 0 clamp(62px,4vw,78px);
-            z-index:100002;
-            pointer-events:none;
-          }'''
-          new_hub = '''.hub-header-content{
-            position:fixed;
-            top:0;
-            left:0;
-            right:auto;
-            width:100vw;
-            max-width:none;
-            height:64px;
-            display:flex;
-            align-items:center;
-            padding:0 0 0 clamp(62px,4vw,78px);
-            z-index:100002;
-            pointer-events:none;
-          }'''
-          if old_hub in text:
-              text = text.replace(old_hub, new_hub, 1)
+              st.markdown(
+                  """
+                  <div class="admin-login-note">
+                    A tela principal continua acessível normalmente. Apenas a área de configuração exige autenticação.
+                  </div>
+                  """,
+                  unsafe_allow_html=True,
+              )
 
-          old_user = '.user{color:var(--ink);font-size:clamp(13px,.85vw,15px);font-weight:700;display:flex;gap:10px;align-items:center;white-space:nowrap}\n.user-badge{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#fff;border:1px solid rgba(30,35,46,.2)}'
-          new_user = '''.user{position:absolute;top:50%;right:220px;transform:translateY(-50%);color:var(--ink);font-size:clamp(13px,.85vw,15px);font-weight:700;display:flex;gap:8px;align-items:center;white-space:nowrap}
-          .user-badge{position:relative;width:32px;height:32px;border-radius:50%;background:#fff;border:1px solid rgba(30,35,46,.16);box-shadow:0 2px 8px rgba(20,35,58,.08);flex:0 0 32px}
-          .user-badge:before{content:"";position:absolute;top:7px;left:50%;width:8px;height:8px;transform:translateX(-50%);border-radius:50%;background:#23324A}
-          .user-badge:after{content:"";position:absolute;left:50%;bottom:6px;width:15px;height:8px;transform:translateX(-50%);border-radius:9px 9px 5px 5px;background:#23324A}
-          .user-chevron{font-size:14px;margin-left:1px}'''
-          if old_user in text:
-              text = text.replace(old_user, new_user, 1)
+              if login:
+                  if admin_password_valid(admin_password):
+                      st.session_state.admin_authenticated = True
+                      st.rerun()
+                  else:
+                      st.error("Senha incorreta. Verifique e tente novamente.")
+'''
 
-          text = text.replace('.hub-header-content{padding-right:170px}', '.user{right:175px}', 1)
+          if old_login not in text:
+              raise SystemExit('Bloco atual de login não encontrado')
+          text = text.replace(old_login, new_login, 1)
 
-          # 5) Substitui a bolinha simples por avatar de usuário desenhado em CSS.
-          text = text.replace(
-              'f\'<div class="user"><div class="user-badge">●</div><span>{esc(cfg["usuario"])}</span><span>⌄</span></div></div>\'',
-              'f\'<div class="user"><div class="user-badge"></div><span>{esc(cfg["usuario"])}</span><span class="user-chevron">⌄</span></div></div>\'',
-              1,
-          )
+          anchor = '''.user-chevron{font-size:14px;margin-left:1px}
+
+.hero{'''
+          admin_css = '''.user-chevron{font-size:14px;margin-left:1px}
+
+/* Login administrativo com a mesma linguagem visual do SETTA HUB */
+[data-testid="stSidebar"] .admin-login-head{
+  margin:8px 0 14px;
+  padding:18px 16px 16px;
+  border:1px solid #E4EAF2;
+  border-radius:16px;
+  background:linear-gradient(180deg,#FFFFFF 0%,#FBFCFE 100%);
+  box-shadow:0 8px 22px rgba(31,45,73,.06);
+}
+[data-testid="stSidebar"] .admin-login-kicker{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:6px 9px;
+  border-radius:999px;
+  background:#FFF7E2;
+  color:#8D6200;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:1.2px;
+}
+[data-testid="stSidebar"] .admin-login-title{
+  margin-top:13px;
+  color:#13203B;
+  font-size:24px;
+  line-height:1.08;
+  font-weight:900;
+  letter-spacing:-.4px;
+}
+[data-testid="stSidebar"] .admin-login-subtitle{
+  margin-top:8px;
+  color:#6C7891;
+  font-size:13px;
+  line-height:1.5;
+}
+[data-testid="stSidebar"] .admin-login-accent{
+  width:54px;
+  height:4px;
+  margin-top:14px;
+  border-radius:999px;
+  background:var(--y2);
+}
+[data-testid="stSidebar"] .admin-login-note{
+  margin-top:12px;
+  padding:10px 12px;
+  border:1px dashed #D7E0EC;
+  border-radius:12px;
+  background:#F8FAFD;
+  color:#72809A;
+  font-size:11px;
+  line-height:1.45;
+}
+[data-testid="stSidebar"] [data-testid="stForm"]{
+  border:1px solid #E4EAF2;
+  border-radius:16px;
+  padding:14px;
+  background:#FFFFFF;
+  box-shadow:0 6px 18px rgba(31,45,73,.04);
+}
+[data-testid="stSidebar"] .stTextInput label{
+  color:#13203B!important;
+  font-weight:700!important;
+}
+[data-testid="stSidebar"] .stTextInput input{
+  min-height:44px!important;
+  border:1px solid #D7E0EC!important;
+  border-radius:11px!important;
+  background:#F8FAFD!important;
+  color:#13203B!important;
+  box-shadow:none!important;
+}
+[data-testid="stSidebar"] .stTextInput input:focus{
+  border-color:#E5AA13!important;
+  box-shadow:0 0 0 1px #E5AA13!important;
+}
+[data-testid="stSidebar"] button[data-testid="stBaseButton-primary"],
+[data-testid="stSidebar"] button[kind="primary"]{
+  min-height:44px!important;
+  border:1px solid #DFA817!important;
+  border-radius:11px!important;
+  background:var(--y)!important;
+  color:#13203B!important;
+  font-weight:800!important;
+  box-shadow:none!important;
+}
+[data-testid="stSidebar"] button[data-testid="stBaseButton-primary"]:hover,
+[data-testid="stSidebar"] button[kind="primary"]:hover{
+  background:#F7BD2A!important;
+  border-color:#D39B09!important;
+  color:#13203B!important;
+}
+
+.hero{'''
+
+          if anchor not in text:
+              raise SystemExit('Âncora CSS não encontrada')
+          text = text.replace(anchor, admin_css, 1)
 
           path.write_text(text, encoding='utf-8')
           PY
@@ -191,10 +206,10 @@ jobs:
       - name: Valida sintaxe Python
         run: python -m py_compile streamlit_app.py
 
-      - name: Commit das correções
+      - name: Commit da melhoria visual
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add streamlit_app.py
-          git diff --cached --quiet || git commit -m "Corrige header e protege configurações por senha"
+          git diff --cached --quiet || git commit -m "Refina layout da tela de senha administrativa"
           git push
