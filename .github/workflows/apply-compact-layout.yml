@@ -1,4 +1,4 @@
-name: Apply compact responsive layout
+name: Apply approved SETTA HUB redesign
 
 on:
   push:
@@ -10,38 +10,201 @@ permissions:
   contents: write
 
 jobs:
-  patch-layout:
+  redesign:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Reduz altura do banner principal
+      - name: Aplica layout visual aprovado
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
 
           path = Path('streamlit_app.py')
           text = path.read_text(encoding='utf-8')
 
-          old = 'min-height:clamp(240px,30vh,310px);'
-          if text.count(old) < 2:
-              raise SystemExit('Altura atual do banner não encontrada; nenhuma alteração realizada.')
+          text = text.replace('height:68px!important;', 'height:64px!important;', 1)
+          text = text.replace('height:68px;\n  display:flex;', 'height:64px;\n  display:flex;', 1)
+          text = text.replace('padding-top:68px;', 'padding-top:64px;', 1)
+          text = text.replace('width:180px;height:58px;display:flex;align-items:center;overflow:hidden', 'width:170px;height:50px;display:flex;align-items:center;overflow:hidden', 1)
+          text = text.replace('font-size:clamp(35px,2.35vw,43px)', 'font-size:clamp(34px,2.2vw,40px)', 1)
+          text = text.replace('width:180px;height:54px;max-width:180px;max-height:54px', 'width:170px;height:48px;max-width:170px;max-height:48px', 1)
+          text = text.replace('width:34px;height:34px', 'width:30px;height:30px', 1)
 
-          # O banner e a imagem passam a ocupar menos altura, preservando o recorte com background-size: cover.
-          text = text.replace(old, 'min-height:clamp(205px,24vh,255px);', 2)
+          hero_pattern = re.compile(r'\.hero\{.*?\.hero-slogan:after\{.*?\}\n', re.S)
+          hero_new = r'''.hero{
+            display:grid;
+            grid-template-columns:minmax(0,.95fr) minmax(420px,1.05fr);
+            gap:clamp(24px,2.2vw,40px);
+            padding:clamp(22px,2.4vw,34px) var(--page-pad) clamp(16px,1.8vw,26px);
+            background:#fff;
+            align-items:center;
+          }
+          .hero-copy{padding:0;background:transparent;align-self:center}
+          .hero-eyebrow{margin-bottom:8px;color:#73809B;font-size:clamp(10px,.66vw,12px);font-weight:800;letter-spacing:4px;text-transform:uppercase}
+          .hero h1{margin:0;color:var(--ink);font-size:clamp(34px,2.55vw,46px);line-height:1.02;letter-spacing:-2px;font-weight:900}
+          .hero h2{margin:7px 0 0;color:#66728B;font-size:clamp(19px,1.42vw,25px);line-height:1.2;font-weight:500}
+          .hero p{margin:clamp(12px,1vw,16px) 0 0;color:#73809B;font-size:clamp(12px,.84vw,14px);line-height:1.55;max-width:560px}
+          .hero-accent{width:64px;height:4px;background:var(--y2);border-radius:10px;margin-top:16px}
+          .hero-image{height:clamp(185px,21vh,225px);min-height:185px;background-size:cover;background-position:center 48%;position:relative;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(27,41,68,.08)}
+          .hero-image:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 48%,rgba(9,21,45,.08) 100%);pointer-events:none}
+          .hero-slogan{position:absolute;right:5%;bottom:18px;max-width:190px;color:white;text-shadow:0 1px 8px rgba(0,0,0,.35);font-size:clamp(11px,.75vw,13px);letter-spacing:1px;line-height:1.25;font-weight:800;z-index:2}
+          .hero-slogan:after{content:"";display:block;width:34px;height:3px;background:var(--y2);margin-top:9px;border-radius:8px}
+          '''
+          text, n = hero_pattern.subn(hero_new, text, count=1)
+          if n != 1:
+              raise SystemExit('Bloco hero não encontrado')
 
-          # Em notebooks/monitores com menor altura útil, compacta ainda mais o banner.
-          text = text.replace('.hero{min-height:230px}', '.hero{min-height:205px}', 1)
-          text = text.replace('.hero-image{min-height:230px}', '.hero-image{min-height:205px}', 1)
-          text = text.replace('.hero-copy{padding-top:32px;padding-bottom:24px}', '.hero-copy{padding-top:26px;padding-bottom:20px}', 1)
+          cards_css_pattern = re.compile(r'\.apps-wrap\{.*?\.access\{.*?\}\n', re.S)
+          cards_css_new = r'''.apps-wrap{width:100%;padding:clamp(8px,.8vw,12px) var(--page-pad) clamp(14px,1.3vw,22px);position:relative;z-index:5;flex:1 0 auto}
+          .apps-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1vw,18px)}
+          .app-card{position:relative;min-height:150px;display:flex;flex-direction:column;justify-content:space-between;text-decoration:none!important;color:inherit!important;background:radial-gradient(circle at 108% 112%,rgba(253,195,59,.13) 0 28%,transparent 29%),#fff;border:1px solid var(--line);border-radius:15px;padding:20px 22px 17px;box-shadow:0 6px 18px rgba(44,62,92,.045);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+          .app-card:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(44,62,92,.10);border-color:#D9DEE7}
+          .card-content{display:grid;grid-template-columns:64px minmax(0,1fr);gap:16px;align-items:start;padding-right:90px}
+          .app-icon{width:64px;height:64px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:#FFF7E2;overflow:hidden;flex:0 0 64px}
+          .app-icon img{width:50px;height:50px;object-fit:contain}
+          .app-icon-emoji{font-size:32px}
+          .card-copy{min-width:0;padding-top:4px}
+          .status{position:absolute;top:18px;right:20px;display:flex;align-items:center;gap:7px;background:#E9F9EF;color:#15883F;font-size:clamp(10px,.7vw,12px);font-weight:700;border-radius:999px;padding:6px 10px;white-space:nowrap}
+          .dot{width:9px;height:9px;border-radius:50%;background:var(--green);flex:0 0 9px}
+          .app-title{color:#111A36;font-weight:900;font-size:clamp(18px,1.08vw,21px);line-height:1.16}
+          .app-desc{margin-top:5px;color:#71809B;font-size:clamp(12px,.78vw,14px);line-height:1.35;max-width:95%}
+          .access{margin-top:14px;color:#F1A000;font-size:clamp(13px,.82vw,15px);font-weight:800;display:flex;align-items:center;gap:8px}
+          .access-arrow{font-size:18px;line-height:1;transition:transform .18s ease}
+          .app-card:hover .access-arrow{transform:translateX(3px)}
+          '''
+          text, n = cards_css_pattern.subn(cards_css_new, text, count=1)
+          if n != 1:
+              raise SystemExit('Bloco de cards não encontrado')
+
+          footer_pattern = re.compile(r'\.page-footer\{.*?\.footer-line\{.*?\}\n', re.S)
+          footer_new = r'''.page-footer{min-height:40px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 var(--page-pad);background:#fff;color:#97A2B8;font-size:clamp(8px,.58vw,10px);letter-spacing:1.8px;text-transform:uppercase;margin-top:auto}
+          .footer-brand{display:flex;align-items:center;gap:10px;min-width:0}
+          .footer-logo-slot{width:64px;height:24px;display:flex;align-items:center;flex:0 0 64px}
+          .footer-brand-text{color:var(--ink);font-size:18px;font-style:italic;font-weight:900}
+          .footer-logo{width:64px;height:24px;object-fit:contain}
+          .footer-line{width:28px;height:3px;background:var(--y2);display:inline-block;margin-left:9px}
+          '''
+          text, n = footer_pattern.subn(footer_new, text, count=1)
+          if n != 1:
+              raise SystemExit('Rodapé não encontrado')
+
+          media_pattern = re.compile(r'@media \(min-width:1200px\) and \(max-height:900px\)\{.*?</style>', re.S)
+          media_new = r'''@media (min-width:1200px) and (max-height:900px){
+            header[data-testid="stHeader"]{height:58px!important}
+            .hub-header-content{height:58px}
+            .page-root{padding-top:58px}
+            .brand-slot{height:46px}
+            .brand-logo{height:43px;max-height:43px}
+            .brand-text{font-size:34px}
+            .user-badge{width:28px;height:28px}
+            .user{font-size:12px}
+            .hero{padding-top:18px;padding-bottom:12px}
+            .hero-image{height:178px;min-height:178px}
+            .hero h1{font-size:36px}
+            .hero h2{font-size:20px}
+            .hero p{font-size:12px;margin-top:10px}
+            .hero-accent{margin-top:12px;height:3px}
+            .apps-wrap{padding-top:6px;padding-bottom:10px}
+            .apps-grid{gap:12px}
+            .app-card{min-height:140px;padding:16px 18px 14px}
+            .card-content{grid-template-columns:58px minmax(0,1fr);gap:13px;padding-right:82px}
+            .app-icon{width:58px;height:58px;flex-basis:58px}
+            .app-icon img{width:46px;height:46px}
+            .app-title{font-size:18px}
+            .app-desc{font-size:12px}
+            .status{top:15px;right:16px;padding:5px 9px}
+            .access{margin-top:10px;font-size:13px}
+            .page-footer{min-height:34px}
+            .footer-logo-slot{height:20px}
+            .footer-logo{height:20px}
+            .footer-brand-text{font-size:16px}
+          }
+          @media (max-width:1320px){
+            :root{--page-pad:clamp(20px,3vw,42px)}
+            .hub-header-content{padding-right:170px}
+            .hero{grid-template-columns:minmax(0,.95fr) minmax(380px,1.05fr);gap:22px}
+            .app-card{padding-left:18px;padding-right:18px}
+            .card-content{padding-right:78px}
+          }
+          @media (max-width:1120px){
+            .apps-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+            .user{display:none}
+            .hero{grid-template-columns:1fr 1fr}
+            .hero h1{font-size:36px}
+          }
+          @media (max-width:820px){
+            .hero{grid-template-columns:1fr;gap:18px}
+            .hero-image{height:190px}
+          }
+          @media (max-width:760px){
+            header[data-testid="stHeader"]{height:62px!important}
+            .hub-header-content{height:62px;padding:0 20px 0 62px}
+            .page-root{padding-top:62px;min-height:100dvh}
+            .brand-slot{width:145px;height:48px}
+            .brand-logo{width:145px;height:44px}
+            .brand-text{font-size:34px}
+            .hero{grid-template-columns:1fr;padding:28px 20px 16px}
+            .hero h1{font-size:32px}
+            .hero h2{font-size:19px}
+            .hero-image{height:180px;min-height:180px}
+            .apps-wrap{padding:12px 18px 18px}
+            .apps-grid{grid-template-columns:1fr}
+            .app-card{min-height:145px;padding:18px}
+            .card-content{grid-template-columns:60px minmax(0,1fr);padding-right:70px}
+            .app-icon{width:60px;height:60px;flex-basis:60px}
+            .app-icon img{width:48px;height:48px}
+            .page-footer{flex-direction:column;gap:8px;padding:10px 18px;text-align:center}
+            .footer-brand{justify-content:center;flex-wrap:wrap}
+          }
+          </style>'''
+          text, n = media_pattern.subn(media_new, text, count=1)
+          if n != 1:
+              raise SystemExit('Bloco responsivo não encontrado')
+
+          cards_markup_pattern = re.compile(r'cards = ""\nfor app in cfg\["apps"\]:.*?\n\npage = \(', re.S)
+          cards_markup_new = '''cards = ""
+          for app in cfg["apps"]:
+              cards += (
+                  f'<a class="app-card" href="{esc(safe_url(app.get("url", "#")))}" target="_blank" rel="noopener noreferrer">'
+                  f'<div class="card-content">'
+                  f'<div class="app-icon">{icon_html(app)}</div>'
+                  f'<div class="card-copy"><div class="app-title">{esc(app.get("nome", "Aplicativo"))}</div>'
+                  f'<div class="app-desc">{esc(app.get("descricao", ""))}</div></div></div>'
+                  f'<div class="status"><span class="dot"></span>{esc(app.get("status", "Ativo"))}</div>'
+                  f'<div class="access">Acessar <span class="access-arrow">→</span></div></a>'
+              )
+
+          page = ('''
+          text, n = cards_markup_pattern.subn(cards_markup_new, text, count=1)
+          if n != 1:
+              raise SystemExit('Markup dos cards não encontrado')
+
+          old_page_head = '''f'<div class="user"><div class="user-badge">●</div><span>{esc(cfg["usuario"])}</span></div></div>'
+              f'<div class="page-root"><section class="hero"><div class="hero-copy">'
+              f'<h1>{esc(cfg["titulo"])}</h1><h2>{esc(cfg["subtitulo"])}</h2>'
+              f'<p>{esc(cfg["descricao"]).replace(chr(10), "<br>")}</p></div>'
+              f'<div class="hero-image" style="background-image:url(\\'{esc(cfg["hero_image"])}\\')">'
+              f'<div class="hero-slogan">{esc(cfg["slogan"]).replace(chr(10), "<br>")}</div></div></section>'''
+          new_page_head = '''f'<div class="user"><div class="user-badge">●</div><span>{esc(cfg["usuario"])}</span><span>⌄</span></div></div>'
+              f'<div class="page-root"><section class="hero"><div class="hero-copy">'
+              f'<div class="hero-eyebrow">BEM-VINDO(A) AO</div>'
+              f'<h1>{esc(cfg["titulo"])}</h1><h2>{esc(cfg["subtitulo"])}</h2>'
+              f'<p>{esc(cfg["descricao"]).replace(chr(10), "<br>")}</p><div class="hero-accent"></div></div>'
+              f'<div class="hero-image" style="background-image:url(\\'{esc(cfg["hero_image"])}\\')">'
+              f'<div class="hero-slogan">{esc(cfg["slogan"]).replace(chr(10), "<br>")}</div></div></section>'''
+          if old_page_head not in text:
+              raise SystemExit('Cabeçalho HTML do hero não encontrado')
+          text = text.replace(old_page_head, new_page_head, 1)
 
           path.write_text(text, encoding='utf-8')
           PY
 
-      - name: Commit da adequação
+      - name: Commit do redesign
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add streamlit_app.py
-          git diff --cached --quiet || git commit -m "Reduz altura do banner principal para evitar rolagem vertical"
+          git diff --cached --quiet || git commit -m "Aplica redesign visual aprovado no SETTA HUB"
           git push
