@@ -1,3 +1,8 @@
+import base64
+import copy
+import html
+from urllib.parse import urlparse
+
 import streamlit as st
 
 st.set_page_config(
@@ -7,57 +12,161 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# ============================================================
-# CONFIGURAÇÃO DOS APLICATIVOS
-# Para adicionar um novo card futuramente, basta inserir um novo
-# dicionário nesta lista.
-# ============================================================
-APPS = [
-    {
-        "nome": "Gestão Almoxarifado",
-        "descricao": "Gestão completa da operação",
-        "icone": "📦",
-        "status": "Online",
-        "url": "#",
-    },
-    {
-        "nome": "Dashboard Operacional",
-        "descricao": "Indicadores e resultados",
-        "icone": "📊",
-        "status": "Online",
-        "url": "#",
-    },
-    {
-        "nome": "MRP",
-        "descricao": "Demanda e necessidade de materiais",
-        "icone": "📋",
-        "status": "Ativo",
-        "url": "#",
-    },
-    {
-        "nome": "Entregas",
-        "descricao": "Controle de OPs e cronograma",
-        "icone": "🚚",
-        "status": "Online",
-        "url": "#",
-    },
-    {
-        "nome": "Compra Fácil",
-        "descricao": "Compras e histórico de preços",
-        "icone": "🛒",
-        "status": "Ativo",
-        "url": "#",
-    },
-    {
-        "nome": "Gestão de Equipe",
-        "descricao": "Colaboradores e plano de carreira",
-        "icone": "👥",
-        "status": "Online",
-        "url": "#",
-    },
-]
+DEFAULT_CONFIG = {
+    "logo_top": "",
+    "logo_footer": "",
+    "hero_image": "https://gruposetta.com.br/wp-content/uploads/2026/03/entradaG9.jpg-2-1-scaled-e1774901671839.png",
+    "titulo": "CENTRAL DE APLICATIVOS",
+    "subtitulo": "Acesso rápido aos sistemas operacionais",
+    "descricao": "Soluções integradas que impulsionam a eficiência,\nconectam pessoas e constroem grandes resultados.",
+    "slogan": "TECNOLOGIA\nQUE CONSTRÓI\nO AMANHÃ",
+    "usuario": "Olá, Usuário",
+    "rodape_esquerdo": "TECNOLOGIA A SERVIÇO DE GRANDES RESULTADOS",
+    "rodape_direito": "JUNTOS, CONSTRUÍMOS O AMANHÃ",
+    "apps": [
+        {"nome": "Gestão Almoxarifado", "descricao": "Gestão completa da operação", "icone": "📦", "status": "Online", "url": "#"},
+        {"nome": "Dashboard Operacional", "descricao": "Indicadores e resultados", "icone": "📊", "status": "Online", "url": "#"},
+        {"nome": "MRP", "descricao": "Demanda e necessidade de materiais", "icone": "📋", "status": "Ativo", "url": "#"},
+        {"nome": "Entregas", "descricao": "Controle de OPs e cronograma", "icone": "🚚", "status": "Online", "url": "#"},
+        {"nome": "Compra Fácil", "descricao": "Compras e histórico de preços", "icone": "🛒", "status": "Ativo", "url": "#"},
+        {"nome": "Gestão de Equipe", "descricao": "Colaboradores e plano de carreira", "icone": "👥", "status": "Online", "url": "#"},
+    ],
+}
 
-HERO_IMAGE_URL = "https://gruposetta.com.br/wp-content/uploads/2026/03/entradaG9.jpg-2-1-scaled-e1774901671839.png"
+if "hub_config" not in st.session_state:
+    st.session_state.hub_config = copy.deepcopy(DEFAULT_CONFIG)
+if "upload_version" not in st.session_state:
+    st.session_state.upload_version = 0
+
+
+def upload_to_data_uri(uploaded_file):
+    if uploaded_file is None:
+        return ""
+    mime = uploaded_file.type or "image/png"
+    encoded = base64.b64encode(uploaded_file.getvalue()).decode("utf-8")
+    return f"data:{mime};base64,{encoded}"
+
+
+def safe_url(value):
+    value = (value or "").strip()
+    if not value or value == "#":
+        return "#"
+    parsed = urlparse(value)
+    if parsed.scheme in {"http", "https"} and parsed.netloc:
+        return value
+    return "#"
+
+
+cfg = st.session_state.hub_config
+uv = st.session_state.upload_version
+
+# ============================================================
+# MENU LATERAL DE CONFIGURAÇÕES
+# As alterações permanecem durante a sessão atual do aplicativo.
+# ============================================================
+with st.sidebar:
+    st.title("⚙️ Configurações")
+    st.caption("Personalize o SETTA HUB sem alterar o layout.")
+
+    with st.form("hub_settings_form"):
+        st.subheader("Identidade visual")
+        logo_top_file = st.file_uploader(
+            "Logo superior",
+            type=["png", "jpg", "jpeg", "webp"],
+            key=f"logo_top_{uv}",
+            help="A imagem será ajustada automaticamente ao espaço atual da logo.",
+        )
+        logo_footer_file = st.file_uploader(
+            "Logo inferior",
+            type=["png", "jpg", "jpeg", "webp"],
+            key=f"logo_footer_{uv}",
+            help="A imagem será ajustada automaticamente ao espaço atual da logo do rodapé.",
+        )
+        hero_file = st.file_uploader(
+            "Imagem principal",
+            type=["png", "jpg", "jpeg", "webp"],
+            key=f"hero_{uv}",
+            help="A imagem ocupará exatamente a mesma área atual, com corte automático para preencher o quadro.",
+        )
+
+        clear_logo_top = st.checkbox("Remover logo superior personalizada")
+        clear_logo_footer = st.checkbox("Remover logo inferior personalizada")
+        restore_hero = st.checkbox("Restaurar imagem principal padrão")
+
+        st.divider()
+        st.subheader("Textos da página")
+        titulo = st.text_input("Título", value=cfg["titulo"])
+        subtitulo = st.text_input("Subtítulo", value=cfg["subtitulo"])
+        descricao = st.text_area("Descrição", value=cfg["descricao"], height=90)
+        slogan = st.text_area("Texto sobre a imagem", value=cfg["slogan"], height=90)
+        usuario = st.text_input("Usuário do cabeçalho", value=cfg["usuario"])
+        rodape_esquerdo = st.text_input("Texto inferior esquerdo", value=cfg["rodape_esquerdo"])
+        rodape_direito = st.text_input("Texto inferior direito", value=cfg["rodape_direito"])
+
+        st.divider()
+        st.subheader("Cartões e redirecionamentos")
+        edited_apps = []
+        for i, app in enumerate(cfg["apps"], start=1):
+            with st.expander(f"{i}. {app['nome']}"):
+                nome = st.text_input("Nome do cartão", value=app["nome"], key=f"nome_{i}_{uv}")
+                descricao_app = st.text_input("Descrição", value=app["descricao"], key=f"desc_{i}_{uv}")
+                icone = st.text_input("Ícone", value=app["icone"], key=f"icon_{i}_{uv}")
+                status = st.text_input("Status", value=app["status"], key=f"status_{i}_{uv}")
+                url = st.text_input(
+                    "Link de destino",
+                    value=app["url"],
+                    key=f"url_{i}_{uv}",
+                    placeholder="https://seu-app.streamlit.app",
+                )
+                edited_apps.append(
+                    {
+                        "nome": nome,
+                        "descricao": descricao_app,
+                        "icone": icone,
+                        "status": status,
+                        "url": url,
+                    }
+                )
+
+        apply_changes = st.form_submit_button("Aplicar alterações", use_container_width=True)
+
+    if apply_changes:
+        new_cfg = copy.deepcopy(cfg)
+
+        if clear_logo_top:
+            new_cfg["logo_top"] = ""
+        elif logo_top_file is not None:
+            new_cfg["logo_top"] = upload_to_data_uri(logo_top_file)
+
+        if clear_logo_footer:
+            new_cfg["logo_footer"] = ""
+        elif logo_footer_file is not None:
+            new_cfg["logo_footer"] = upload_to_data_uri(logo_footer_file)
+
+        if restore_hero:
+            new_cfg["hero_image"] = DEFAULT_CONFIG["hero_image"]
+        elif hero_file is not None:
+            new_cfg["hero_image"] = upload_to_data_uri(hero_file)
+
+        new_cfg["titulo"] = titulo
+        new_cfg["subtitulo"] = subtitulo
+        new_cfg["descricao"] = descricao
+        new_cfg["slogan"] = slogan
+        new_cfg["usuario"] = usuario
+        new_cfg["rodape_esquerdo"] = rodape_esquerdo
+        new_cfg["rodape_direito"] = rodape_direito
+        new_cfg["apps"] = edited_apps
+
+        st.session_state.hub_config = new_cfg
+        st.success("Configurações aplicadas.")
+        st.rerun()
+
+    if st.button("Restaurar tudo ao padrão", use_container_width=True):
+        st.session_state.hub_config = copy.deepcopy(DEFAULT_CONFIG)
+        st.session_state.upload_version += 1
+        st.rerun()
+
+cfg = st.session_state.hub_config
 
 st.html(
     """
@@ -86,6 +195,26 @@ st.html(
         display:none !important;
     }
 
+    [data-testid="stSidebar"]{
+        border-right:1px solid #E7EBF1;
+    }
+
+    [data-testid="stSidebar"] > div:first-child{
+        background:#FFFFFF;
+    }
+
+    [data-testid="stSidebarCollapsedControl"]{
+        display:flex !important;
+        position:fixed !important;
+        top:20px !important;
+        left:18px !important;
+        z-index:10000 !important;
+        background:#FFFFFF !important;
+        border:1px solid rgba(30,35,46,.10) !important;
+        border-radius:10px !important;
+        box-shadow:0 3px 10px rgba(30,35,46,.08) !important;
+    }
+
     .block-container{
         max-width:100% !important;
         padding:0 !important;
@@ -102,13 +231,31 @@ st.html(
         border-bottom:1px solid rgba(0,0,0,.05);
     }
 
-    .brand{
+    .brand-slot{
+        width:165px;
+        height:58px;
+        display:flex;
+        align-items:center;
+        justify-content:flex-start;
+        overflow:hidden;
+    }
+
+    .brand-text{
         color:var(--setta-ink);
         font-size:43px;
         font-style:italic;
         font-weight:900;
         letter-spacing:-3px;
         line-height:1;
+        white-space:nowrap;
+    }
+
+    .brand-logo{
+        width:165px;
+        height:58px;
+        object-fit:contain;
+        object-position:left center;
+        display:block;
     }
 
     .user{
@@ -143,8 +290,7 @@ st.html(
         position:relative;
         padding:62px 5% 44px 5%;
         z-index:2;
-        background:
-          linear-gradient(120deg,#FFFFFF 0%,#FFFFFF 72%,rgba(255,255,255,.92) 78%,rgba(255,255,255,0) 79%);
+        background:linear-gradient(120deg,#FFFFFF 0%,#FFFFFF 72%,rgba(255,255,255,.92) 78%,rgba(255,255,255,0) 79%);
     }
 
     .hero h1{
@@ -234,9 +380,7 @@ st.html(
         justify-content:space-between;
         text-decoration:none !important;
         color:inherit !important;
-        background:
-           radial-gradient(circle at 108% 110%, rgba(253,195,59,.16) 0 27%, transparent 28%),
-           #FFFFFF;
+        background:radial-gradient(circle at 108% 110%, rgba(253,195,59,.16) 0 27%, transparent 28%),#FFFFFF;
         border:1px solid var(--setta-line);
         border-radius:16px;
         padding:24px 30px 22px 30px;
@@ -265,6 +409,7 @@ st.html(
         place-items:center;
         font-size:34px;
         background:#FFF7E2;
+        overflow:hidden;
     }
 
     .status{
@@ -340,14 +485,35 @@ st.html(
         display:flex;
         align-items:center;
         gap:12px;
+        min-width:0;
     }
 
-    .footer-brand strong{
+    .footer-logo-slot{
+        width:72px;
+        height:30px;
+        display:flex;
+        align-items:center;
+        justify-content:flex-start;
+        overflow:hidden;
+        flex:0 0 72px;
+    }
+
+    .footer-brand-text{
         color:var(--setta-ink);
         font-size:21px;
         font-style:italic;
+        font-weight:900;
         letter-spacing:-1px;
         text-transform:none;
+        white-space:nowrap;
+    }
+
+    .footer-logo{
+        width:72px;
+        height:30px;
+        object-fit:contain;
+        object-position:left center;
+        display:block;
     }
 
     .footer-line{
@@ -366,110 +532,104 @@ st.html(
     }
 
     @media(max-width:760px){
-        .topbar{
-            height:70px;
-            padding:0 20px;
-        }
-        .brand{font-size:35px;}
+        .topbar{height:70px;padding:0 20px 0 70px;}
+        .brand-slot{width:140px;height:50px;}
+        .brand-logo{width:140px;height:50px;}
+        .brand-text{font-size:35px;}
         .user span:last-child{display:none;}
-        .hero{
-            grid-template-columns:1fr;
-        }
-        .hero-copy{
-            padding:38px 22px 32px 22px;
-            background:#fff;
-        }
-        .hero h1{
-            font-size:34px;
-            letter-spacing:-1px;
-        }
+        .hero{grid-template-columns:1fr;}
+        .hero-copy{padding:38px 22px 32px 22px;background:#fff;}
+        .hero h1{font-size:34px;letter-spacing:-1px;}
         .hero h2{font-size:20px;}
         .hero p{font-size:14px;}
-        .hero-image{
-            min-height:190px;
-        }
-        .apps-wrap{
-            padding:18px 18px 28px 18px;
-            margin-top:0;
-        }
+        .hero-image{min-height:190px;}
+        .apps-wrap{padding:18px 18px 28px 18px;margin-top:0;}
         .apps-grid{grid-template-columns:1fr;}
-        .app-card{
-            min-height:175px;
-            padding:22px;
-        }
+        .app-card{min-height:175px;padding:22px;}
         .page-footer{
             flex-direction:column;
-            gap:8px;
+            gap:10px;
             justify-content:center;
             text-align:center;
             padding:16px 18px;
         }
+        .footer-brand{justify-content:center;flex-wrap:wrap;}
     }
 </style>
 """
 )
 
-hero_style = f'background-image:url("{HERO_IMAGE_URL}");'
+def esc(value):
+    return html.escape(str(value or ""), quote=True)
+
+logo_top_html = (
+    f'<img class="brand-logo" src="{cfg["logo_top"]}" alt="Logo superior">'
+    if cfg["logo_top"]
+    else '<div class="brand-text">Setta</div>'
+)
+logo_footer_html = (
+    f'<img class="footer-logo" src="{cfg["logo_footer"]}" alt="Logo inferior">'
+    if cfg["logo_footer"]
+    else '<div class="footer-brand-text">Setta</div>'
+)
+
+hero_image = esc(cfg["hero_image"])
+hero_style = f"background-image:url('{hero_image}');"
+descricao_html = esc(cfg["descricao"]).replace("\n", "<br>")
+slogan_html = esc(cfg["slogan"]).replace("\n", "<br>")
 
 cards_html = ""
-for app in APPS:
+for app in cfg["apps"]:
+    url = esc(safe_url(app["url"]))
     cards_html += f"""
-    <a class="app-card" href="{app['url']}" target="_blank" rel="noopener noreferrer">
+    <a class="app-card" href="{url}" target="_blank" rel="noopener noreferrer">
         <div>
             <div class="card-top">
-                <div class="app-icon">{app['icone']}</div>
-                <div class="status"><span class="dot"></span>{app['status']}</div>
+                <div class="app-icon">{esc(app["icone"])}</div>
+                <div class="status"><span class="dot"></span>{esc(app["status"])}</div>
             </div>
-            <div class="app-title">{app['nome']}</div>
-            <div class="app-desc">{app['descricao']}</div>
+            <div class="app-title">{esc(app["nome"])}</div>
+            <div class="app-desc">{esc(app["descricao"])}</div>
         </div>
         <div class="access">Acessar <span class="arrow">→</span></div>
     </a>
     """
 
-html = f"""
+page_html = f"""
 <div class="topbar">
-    <div class="brand">Setta</div>
+    <div class="brand-slot">{logo_top_html}</div>
     <div class="user">
         <div class="user-badge">●</div>
-        <span>Olá, Usuário</span>
+        <span>{esc(cfg["usuario"])}</span>
         <span>⌄</span>
     </div>
 </div>
 
 <section class="hero">
     <div class="hero-copy">
-        <h1>CENTRAL DE APLICATIVOS</h1>
-        <h2>Acesso rápido aos sistemas operacionais</h2>
-        <p>Soluções integradas que impulsionam a eficiência,<br>
-        conectam pessoas e constroem grandes resultados.</p>
+        <h1>{esc(cfg["titulo"])}</h1>
+        <h2>{esc(cfg["subtitulo"])}</h2>
+        <p>{descricao_html}</p>
     </div>
-
-    <div class="hero-image" style='{hero_style}'>
-        <div class="hero-slogan">
-            TECNOLOGIA<br>
-            QUE CONSTRÓI<br>
-            O AMANHÃ
-        </div>
+    <div class="hero-image" style="{hero_style}">
+        <div class="hero-slogan">{slogan_html}</div>
     </div>
 </section>
 
 <div class="apps-wrap">
-    <div class="apps-grid">
-        {cards_html}
-    </div>
+    <div class="apps-grid">{cards_html}</div>
 </div>
 
 <div class="page-footer">
     <div class="footer-brand">
-        <strong>Setta</strong>
+        <div class="footer-logo-slot">{logo_footer_html}</div>
         <span>|</span>
-        <span>TECNOLOGIA A SERVIÇO DE GRANDES RESULTADOS</span>
+        <span>{esc(cfg["rodape_esquerdo"])}</span>
     </div>
     <div>
-        JUNTOS, CONSTRUÍMOS O AMANHÃ <span class="footer-line"></span>
+        {esc(cfg["rodape_direito"])} <span class="footer-line"></span>
     </div>
 </div>
 """
 
-st.html(html)
+st.html(page_html)
