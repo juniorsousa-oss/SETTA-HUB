@@ -1,4 +1,4 @@
-name: Refine SETTA HUB admin login
+name: Fix responsive user avatar and manage button
 
 on:
   push:
@@ -14,14 +14,80 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Aplica layout institucional na tela de senha
-        run: python -c "import base64;exec(base64.b64decode('CmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aAoKcGF0aCA9IFBhdGgoInN0cmVhbWxpdF9hcHAucHkiKQp0ZXh0ID0gcGF0aC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikKCm9sZF9sb2dpbiA9ICcnJyAgICBpZiBub3Qgc3Quc2Vzc2lvbl9zdGF0ZS5hZG1pbl9hdXRoZW50aWNhdGVkOgogICAgICAgIHN0Lm1hcmtkb3duKCIjIyMg8J+UkCDDgXJlYSBhZG1pbmlzdHJhdGl2YSIpCiAgICAgICAgc3QuY2FwdGlvbigiRGlnaXRlIGEgc2VuaGEgcGFyYSBhY2Vzc2FyIGFzIGNvbmZpZ3VyYcOnw7VlcyBkbyBTRVRUQSBIVUIuIikKCiAgICAgICAgd2l0aCBzdC5mb3JtKCJhZG1pbl9sb2dpbiIsIGNsZWFyX29uX3N1Ym1pdD1GYWxzZSk6CiAgICAgICAgICAgIGFkbWluX3Bhc3N3b3JkID0gc3QudGV4dF9pbnB1dCgKICAgICAgICAgICAgICAgICJTZW5oYSIsCiAgICAgICAgICAgICAgICB0eXBlPSJwYXNzd29yZCIsCiAgICAgICAgICAgICAgICBwbGFjZWhvbGRlcj0iRGlnaXRlIGEgc2VuaGEiLAogICAgICAgICAgICAgICAgYXV0b2NvbXBsZXRlPSJjdXJyZW50LXBhc3N3b3JkIiwKICAgICAgICAgICAgKQogICAgICAgICAgICBsb2dpbiA9IHN0LmZvcm1fc3VibWl0X2J1dHRvbigKICAgICAgICAgICAgICAgICJBY2Vzc2FyIGNvbmZpZ3VyYcOnw7VlcyIsCiAgICAgICAgICAgICAgICB1c2VfY29udGFpbmVyX3dpZHRoPVRydWUsCiAgICAgICAgICAgICAgICB0eXBlPSJwcmltYXJ5IiwKICAgICAgICAgICAgKQoKICAgICAgICBpZiBsb2dpbjoKICAgICAgICAgICAgaWYgYWRtaW5fcGFzc3dvcmRfdmFsaWQoYWRtaW5fcGFzc3dvcmQpOgogICAgICAgICAgICAgICAgc3Quc2Vzc2lvbl9zdGF0ZS5hZG1pbl9hdXRoZW50aWNhdGVkID0gVHJ1ZQogICAgICAgICAgICAgICAgc3QucmVydW4oKQogICAgICAgICAgICBlbHNlOgogICAgICAgICAgICAgICAgc3QuZXJyb3IoIlNlbmhhIGluY29ycmV0YS4iKQonJycKCm5ld19sb2dpbiA9ICcnJyAgICBpZiBub3Qgc3Quc2Vzc2lvbl9zdGF0ZS5hZG1pbl9hdXRoZW50aWNhdGVkOgogICAgICAgIHN0Lm1hcmtkb3duKAogICAgICAgICAgICAnPGRpdiBjbGFzcz0iYWRtaW4tbG9naW4taGVhZCI+JwogICAgICAgICAgICAnPGRpdiBjbGFzcz0iYWRtaW4tbG9naW4ta2lja2VyIj7wn5SQIMOBUkVBIEFETUlOSVNUUkFUSVZBPC9kaXY+JwogICAgICAgICAgICAnPGRpdiBjbGFzcz0iYWRtaW4tbG9naW4tdGl0bGUiPkFjZXNzbyDDoHMgY29uZmlndXJhw6fDtWVzPC9kaXY+JwogICAgICAgICAgICAnPGRpdiBjbGFzcz0iYWRtaW4tbG9naW4tc3VidGl0bGUiPkRpZ2l0ZSBhIHNlbmhhIHBhcmEgbGliZXJhciBhIHBlcnNvbmFsaXphw6fDo28gZG8gU0VUVEEgSFVCLjwvZGl2PicKICAgICAgICAgICAgJzxkaXYgY2xhc3M9ImFkbWluLWxvZ2luLWFjY2VudCI+PC9kaXY+JwogICAgICAgICAgICAnPC9kaXY+JywKICAgICAgICAgICAgdW5zYWZlX2FsbG93X2h0bWw9VHJ1ZSwKICAgICAgICApCgogICAgICAgIHdpdGggc3QuZm9ybSgiYWRtaW5fbG9naW4iLCBjbGVhcl9vbl9zdWJtaXQ9RmFsc2UpOgogICAgICAgICAgICBhZG1pbl9wYXNzd29yZCA9IHN0LnRleHRfaW5wdXQoCiAgICAgICAgICAgICAgICAiU2VuaGEiLAogICAgICAgICAgICAgICAgdHlwZT0icGFzc3dvcmQiLAogICAgICAgICAgICAgICAgcGxhY2Vob2xkZXI9IkRpZ2l0ZSBhIHNlbmhhIGFkbWluaXN0cmF0aXZhIiwKICAgICAgICAgICAgICAgIGF1dG9jb21wbGV0ZT0iY3VycmVudC1wYXNzd29yZCIsCiAgICAgICAgICAgICkKICAgICAgICAgICAgbG9naW4gPSBzdC5mb3JtX3N1Ym1pdF9idXR0b24oCiAgICAgICAgICAgICAgICAiRW50cmFyIG5hcyBjb25maWd1cmHDp8O1ZXMiLAogICAgICAgICAgICAgICAgdXNlX2NvbnRhaW5lcl93aWR0aD1UcnVlLAogICAgICAgICAgICAgICAgdHlwZT0icHJpbWFyeSIsCiAgICAgICAgICAgICkKCiAgICAgICAgc3QubWFya2Rvd24oCiAgICAgICAgICAgICc8ZGl2IGNsYXNzPSJhZG1pbi1sb2dpbi1ub3RlIj4nCiAgICAgICAgICAgICdBIHRlbGEgcHJpbmNpcGFsIGNvbnRpbnVhIGFjZXNzw612ZWwgbm9ybWFsbWVudGUuIEFwZW5hcyBhIMOhcmVhIGRlIGNvbmZpZ3VyYcOnw6NvIGV4aWdlIGF1dGVudGljYcOnw6NvLicKICAgICAgICAgICAgJzwvZGl2PicsCiAgICAgICAgICAgIHVuc2FmZV9hbGxvd19odG1sPVRydWUsCiAgICAgICAgKQoKICAgICAgICBpZiBsb2dpbjoKICAgICAgICAgICAgaWYgYWRtaW5fcGFzc3dvcmRfdmFsaWQoYWRtaW5fcGFzc3dvcmQpOgogICAgICAgICAgICAgICAgc3Quc2Vzc2lvbl9zdGF0ZS5hZG1pbl9hdXRoZW50aWNhdGVkID0gVHJ1ZQogICAgICAgICAgICAgICAgc3QucmVydW4oKQogICAgICAgICAgICBlbHNlOgogICAgICAgICAgICAgICAgc3QuZXJyb3IoIlNlbmhhIGluY29ycmV0YS4gVmVyaWZpcXVlIGUgdGVudGUgbm92YW1lbnRlLiIpCicnJwoKaWYgb2xkX2xvZ2luIG5vdCBpbiB0ZXh0OgogICAgcmFpc2UgU3lzdGVtRXhpdCgiQmxvY28gYXR1YWwgZGUgbG9naW4gbsOjbyBlbmNvbnRyYWRvIikKdGV4dCA9IHRleHQucmVwbGFjZShvbGRfbG9naW4sIG5ld19sb2dpbiwgMSkKCmFuY2hvciA9ICcnJy51c2VyLWNoZXZyb257Zm9udC1zaXplOjE0cHg7bWFyZ2luLWxlZnQ6MXB4fQoKLmhlcm97JycnCgphZG1pbl9jc3MgPSAnJycudXNlci1jaGV2cm9ue2ZvbnQtc2l6ZToxNHB4O21hcmdpbi1sZWZ0OjFweH0KCi8qIExvZ2luIGFkbWluaXN0cmF0aXZvIGNvbSBhIG1lc21hIGxpbmd1YWdlbSB2aXN1YWwgZG8gU0VUVEEgSFVCICovCltkYXRhLXRlc3RpZD0ic3RTaWRlYmFyIl0gLmFkbWluLWxvZ2luLWhlYWR7CiAgbWFyZ2luOjhweCAwIDE0cHg7CiAgcGFkZGluZzoxOHB4IDE2cHggMTZweDsKICBib3JkZXI6MXB4IHNvbGlkICNFNEVBRjI7CiAgYm9yZGVyLXJhZGl1czoxNnB4OwogIGJhY2tncm91bmQ6bGluZWFyLWdyYWRpZW50KDE4MGRlZywjRkZGRkZGIDAlLCNGQkZDRkUgMTAwJSk7CiAgYm94LXNoYWRvdzowIDhweCAyMnB4IHJnYmEoMzEsNDUsNzMsLjA2KTsKfQpbZGF0YS10ZXN0aWQ9InN0U2lkZWJhciJdIC5hZG1pbi1sb2dpbi1raWNrZXJ7CiAgZGlzcGxheTppbmxpbmUtZmxleDsKICBhbGlnbi1pdGVtczpjZW50ZXI7CiAgZ2FwOjdweDsKICBwYWRkaW5nOjZweCA5cHg7CiAgYm9yZGVyLXJhZGl1czo5OTlweDsKICBiYWNrZ3JvdW5kOiNGRkY3RTI7CiAgY29sb3I6IzhENjIwMDsKICBmb250LXNpemU6MTBweDsKICBmb250LXdlaWdodDo4MDA7CiAgbGV0dGVyLXNwYWNpbmc6MS4ycHg7Cn0KW2RhdGEtdGVzdGlkPSJzdFNpZGViYXIiXSAuYWRtaW4tbG9naW4tdGl0bGV7CiAgbWFyZ2luLXRvcDoxM3B4OwogIGNvbG9yOiMxMzIwM0I7CiAgZm9udC1zaXplOjI0cHg7CiAgbGluZS1oZWlnaHQ6MS4wODsKICBmb250LXdlaWdodDo5MDA7CiAgbGV0dGVyLXNwYWNpbmc6LS40cHg7Cn0KW2RhdGEtdGVzdGlkPSJzdFNpZGViYXIiXSAuYWRtaW4tbG9naW4tc3VidGl0bGV7CiAgbWFyZ2luLXRvcDo4cHg7CiAgY29sb3I6IzZDNzg5MTsKICBmb250LXNpemU6MTNweDsKICBsaW5lLWhlaWdodDoxLjU7Cn0KW2RhdGEtdGVzdGlkPSJzdFNpZGViYXIiXSAuYWRtaW4tbG9naW4tYWNjZW50ewogIHdpZHRoOjU0cHg7CiAgaGVpZ2h0OjRweDsKICBtYXJnaW4tdG9wOjE0cHg7CiAgYm9yZGVyLXJhZGl1czo5OTlweDsKICBiYWNrZ3JvdW5kOnZhcigtLXkyKTsKfQpbZGF0YS10ZXN0aWQ9InN0U2lkZWJhciJdIC5hZG1pbi1sb2dpbi1ub3RlewogIG1hcmdpbi10b3A6MTJweDsKICBwYWRkaW5nOjEwcHggMTJweDsKICBib3JkZXI6MXB4IGRhc2hlZCAjRDdFMEVDOwogIGJvcmRlci1yYWRpdXM6MTJweDsKICBiYWNrZ3JvdW5kOiNGOEZBRkQ7CiAgY29sb3I6IzcyODA5QTsKICBmb250LXNpemU6MTFweDsKICBsaW5lLWhlaWdodDoxLjQ1Owp9CltkYXRhLXRlc3RpZD0ic3RTaWRlYmFyIl0gW2RhdGEtdGVzdGlkPSJzdEZvcm0iXXsKICBib3JkZXI6MXB4IHNvbGlkICNFNEVBRjI7CiAgYm9yZGVyLXJhZGl1czoxNnB4OwogIHBhZGRpbmc6MTRweDsKICBiYWNrZ3JvdW5kOiNGRkZGRkY7CiAgYm94LXNoYWRvdzowIDZweCAxOHB4IHJnYmEoMzEsNDUsNzMsLjA0KTsKfQpbZGF0YS10ZXN0aWQ9InN0U2lkZWJhciJdIC5zdFRleHRJbnB1dCBsYWJlbHsKICBjb2xvcjojMTMyMDNCIWltcG9ydGFudDsKICBmb250LXdlaWdodDo3MDAhaW1wb3J0YW50Owp9CltkYXRhLXRlc3RpZD0ic3RTaWRlYmFyIl0gLnN0VGV4dElucHV0IGlucHV0ewogIG1pbi1oZWlnaHQ6NDRweCFpbXBvcnRhbnQ7CiAgYm9yZGVyOjFweCBzb2xpZCAjRDdFMEVDIWltcG9ydGFudDsKICBib3JkZXItcmFkaXVzOjExcHghaW1wb3J0YW50OwogIGJhY2tncm91bmQ6I0Y4RkFGRCFpbXBvcnRhbnQ7CiAgY29sb3I6IzEzMjAzQiFpbXBvcnRhbnQ7CiAgYm94LXNoYWRvdzpub25lIWltcG9ydGFudDsKfQpbZGF0YS10ZXN0aWQ9InN0U2lkZWJhciJdIC5zdFRleHRJbnB1dCBpbnB1dDpmb2N1c3sKICBib3JkZXItY29sb3I6I0U1QUExMyFpbXBvcnRhbnQ7CiAgYm94LXNoYWRvdzowIDAgMCAxcHggI0U1QUExMyFpbXBvcnRhbnQ7Cn0KW2RhdGEtdGVzdGlkPSJzdFNpZGViYXIiXSBidXR0b25bZGF0YS10ZXN0aWQ9InN0QmFzZUJ1dHRvbi1wcmltYXJ5Il0sCltkYXRhLXRlc3RpZD0ic3RTaWRlYmFyIl0gYnV0dG9uW2tpbmQ9InByaW1hcnkiXXsKICBtaW4taGVpZ2h0OjQ0cHghaW1wb3J0YW50OwogIGJvcmRlcjoxcHggc29saWQgI0RGQTgxNyFpbXBvcnRhbnQ7CiAgYm9yZGVyLXJhZGl1czoxMXB4IWltcG9ydGFudDsKICBiYWNrZ3JvdW5kOnZhcigtLXkpIWltcG9ydGFudDsKICBjb2xvcjojMTMyMDNCIWltcG9ydGFudDsKICBmb250LXdlaWdodDo4MDAhaW1wb3J0YW50OwogIGJveC1zaGFkb3c6bm9uZSFpbXBvcnRhbnQ7Cn0KW2RhdGEtdGVzdGlkPSJzdFNpZGViYXIiXSBidXR0b25bZGF0YS10ZXN0aWQ9InN0QmFzZUJ1dHRvbi1wcmltYXJ5Il06aG92ZXIsCltkYXRhLXRlc3RpZD0ic3RTaWRlYmFyIl0gYnV0dG9uW2tpbmQ9InByaW1hcnkiXTpob3ZlcnsKICBiYWNrZ3JvdW5kOiNGN0JEMkEhaW1wb3J0YW50OwogIGJvcmRlci1jb2xvcjojRDM5QjA5IWltcG9ydGFudDsKICBjb2xvcjojMTMyMDNCIWltcG9ydGFudDsKfQoKLmhlcm97JycnCgppZiBhbmNob3Igbm90IGluIHRleHQ6CiAgICByYWlzZSBTeXN0ZW1FeGl0KCLDgm5jb3JhIENTUyBuw6NvIGVuY29udHJhZGEiKQp0ZXh0ID0gdGV4dC5yZXBsYWNlKGFuY2hvciwgYWRtaW5fY3NzLCAxKQoKcGF0aC53cml0ZV90ZXh0KHRleHQsIGVuY29kaW5nPSJ1dGYtOCIpCg=='))"
+
+      - name: Corrige avatar responsivo e botão Gerenciar aplicativo
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('streamlit_app.py')
+          text = path.read_text(encoding='utf-8')
+
+          old_user = '''.user{position:absolute;top:50%;right:220px;transform:translateY(-50%);color:var(--ink);font-size:clamp(13px,.85vw,15px);font-weight:700;display:flex;gap:8px;align-items:center;white-space:nowrap}
+          .user-badge{position:relative;width:32px;height:32px;border-radius:50%;background:#fff;border:1px solid rgba(30,35,46,.16);box-shadow:0 2px 8px rgba(20,35,58,.08);flex:0 0 32px}
+          .user-badge:before{content:"";position:absolute;top:7px;left:50%;width:8px;height:8px;transform:translateX(-50%);border-radius:50%;background:#23324A}
+          .user-badge:after{content:"";position:absolute;left:50%;bottom:6px;width:15px;height:8px;transform:translateX(-50%);border-radius:9px 9px 5px 5px;background:#23324A}
+          .user-chevron{font-size:14px;margin-left:1px}'''
+
+          new_user = '''.user{position:absolute;top:50%;right:clamp(175px,12vw,230px);transform:translateY(-50%);color:var(--ink);font-size:clamp(13px,.85vw,15px);font-weight:700;display:flex;gap:8px;align-items:center;white-space:nowrap;line-height:1}
+          .user-badge{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid rgba(30,35,46,.16);box-shadow:0 2px 8px rgba(20,35,58,.08);flex:0 0 32px;overflow:hidden}
+          .user-badge svg{display:block;width:18px;height:18px;min-width:18px;min-height:18px;fill:#23324A;stroke:none}
+          .user-chevron{font-size:14px;line-height:1;margin-left:1px;flex:0 0 auto}
+
+          /* Botão nativo do Streamlit Community Cloud: Gerenciar aplicativo */
+          [data-testid="manage_app_button"],
+          button[data-testid="manage_app_button"],
+          [class*="viewerBadge"] button,
+          [class*="viewerBadge"] a{
+            background:var(--y)!important;
+            color:var(--ink)!important;
+            border-color:#DFA817!important;
+            box-shadow:0 4px 12px rgba(31,45,73,.12)!important;
+          }
+          [data-testid="manage_app_button"] *,
+          button[data-testid="manage_app_button"] *,
+          [class*="viewerBadge"] button *,
+          [class*="viewerBadge"] a *{
+            color:var(--ink)!important;
+            fill:var(--ink)!important;
+            stroke:var(--ink)!important;
+          }'''
+
+          if old_user in text:
+              text = text.replace(old_user, new_user, 1)
+          elif 'user-badge svg' not in text:
+              raise SystemExit('Bloco CSS do usuário não encontrado')
+
+          old_markup = 'f\'<div class="user"><div class="user-badge"></div><span>{esc(cfg["usuario"])}</span><span class="user-chevron">⌄</span></div></div>\''
+          new_markup = 'f\'<div class="user"><div class="user-badge"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 20c.45-4.05 3.18-6.2 7.5-6.2s7.05 2.15 7.5 6.2H4.5z"></path></svg></div><span>{esc(cfg["usuario"])}</span><span class="user-chevron">⌄</span></div></div>\''
+
+          if old_markup in text:
+              text = text.replace(old_markup, new_markup, 1)
+          elif '<svg viewBox="0 0 24 24"' not in text:
+              raise SystemExit('Markup do avatar não encontrado')
+
+          text = text.replace(
+              '.user-badge{width:28px;height:28px}\n  .user{font-size:12px}',
+              '.user-badge{width:30px;height:30px;flex-basis:30px}\n  .user-badge svg{width:17px;height:17px;min-width:17px;min-height:17px}\n  .user{font-size:12px}',
+              1,
+          )
+
+          text = text.replace(
+              '@media (max-width:1320px){\n  :root{--page-pad:clamp(20px,3vw,42px)}\n  .user{right:175px}',
+              '@media (max-width:1320px){\n  :root{--page-pad:clamp(20px,3vw,42px)}\n  .user{right:165px}',
+              1,
+          )
+
+          path.write_text(text, encoding='utf-8')
+          PY
+
       - name: Valida sintaxe Python
         run: python -m py_compile streamlit_app.py
-      - name: Commit da melhoria visual
+
+      - name: Commit das correções visuais
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add streamlit_app.py
-          git diff --cached --quiet || git commit -m "Refina layout da tela de senha administrativa"
+          git diff --cached --quiet || git commit -m "Corrige avatar responsivo e estiliza botão de gerenciamento"
           git push
