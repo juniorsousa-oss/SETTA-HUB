@@ -190,28 +190,42 @@ uv = st.session_state.uv
 
 with st.sidebar:
     if not st.session_state.admin_authenticated:
-        st.markdown("### 🔐 Área administrativa")
-        st.caption("Digite a senha para acessar as configurações do SETTA HUB.")
+        st.markdown(
+            '<div class="admin-login-head">'
+            '<div class="admin-login-kicker">🔐 ÁREA ADMINISTRATIVA</div>'
+            '<div class="admin-login-title">Acesso às configurações</div>'
+            '<div class="admin-login-subtitle">Digite a senha para liberar a personalização do SETTA HUB.</div>'
+            '<div class="admin-login-accent"></div>'
+            '</div>',
+            unsafe_allow_html=True,
+        )
 
         with st.form("admin_login", clear_on_submit=False):
             admin_password = st.text_input(
                 "Senha",
                 type="password",
-                placeholder="Digite a senha",
+                placeholder="Digite a senha administrativa",
                 autocomplete="current-password",
             )
             login = st.form_submit_button(
-                "Acessar configurações",
+                "Entrar nas configurações",
                 use_container_width=True,
                 type="primary",
             )
+
+        st.markdown(
+            '<div class="admin-login-note">'
+            'A tela principal continua acessível normalmente. Apenas a área de configuração exige autenticação.'
+            '</div>',
+            unsafe_allow_html=True,
+        )
 
         if login:
             if admin_password_valid(admin_password):
                 st.session_state.admin_authenticated = True
                 st.rerun()
             else:
-                st.error("Senha incorreta.")
+                st.error("Senha incorreta. Verifique e tente novamente.")
     else:
         if st.button("🔒 Sair das configurações", use_container_width=True):
             st.session_state.admin_authenticated = False
@@ -436,6 +450,98 @@ header[data-testid="stHeader"] *{color:var(--ink)!important}
 .user-badge:before{content:"";position:absolute;top:7px;left:50%;width:8px;height:8px;transform:translateX(-50%);border-radius:50%;background:#23324A}
 .user-badge:after{content:"";position:absolute;left:50%;bottom:6px;width:15px;height:8px;transform:translateX(-50%);border-radius:9px 9px 5px 5px;background:#23324A}
 .user-chevron{font-size:14px;margin-left:1px}
+
+/* Login administrativo com a mesma linguagem visual do SETTA HUB */
+[data-testid="stSidebar"] .admin-login-head{
+  margin:8px 0 14px;
+  padding:18px 16px 16px;
+  border:1px solid #E4EAF2;
+  border-radius:16px;
+  background:linear-gradient(180deg,#FFFFFF 0%,#FBFCFE 100%);
+  box-shadow:0 8px 22px rgba(31,45,73,.06);
+}
+[data-testid="stSidebar"] .admin-login-kicker{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:6px 9px;
+  border-radius:999px;
+  background:#FFF7E2;
+  color:#8D6200;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:1.2px;
+}
+[data-testid="stSidebar"] .admin-login-title{
+  margin-top:13px;
+  color:#13203B;
+  font-size:24px;
+  line-height:1.08;
+  font-weight:900;
+  letter-spacing:-.4px;
+}
+[data-testid="stSidebar"] .admin-login-subtitle{
+  margin-top:8px;
+  color:#6C7891;
+  font-size:13px;
+  line-height:1.5;
+}
+[data-testid="stSidebar"] .admin-login-accent{
+  width:54px;
+  height:4px;
+  margin-top:14px;
+  border-radius:999px;
+  background:var(--y2);
+}
+[data-testid="stSidebar"] .admin-login-note{
+  margin-top:12px;
+  padding:10px 12px;
+  border:1px dashed #D7E0EC;
+  border-radius:12px;
+  background:#F8FAFD;
+  color:#72809A;
+  font-size:11px;
+  line-height:1.45;
+}
+[data-testid="stSidebar"] [data-testid="stForm"]{
+  border:1px solid #E4EAF2;
+  border-radius:16px;
+  padding:14px;
+  background:#FFFFFF;
+  box-shadow:0 6px 18px rgba(31,45,73,.04);
+}
+[data-testid="stSidebar"] .stTextInput label{
+  color:#13203B!important;
+  font-weight:700!important;
+}
+[data-testid="stSidebar"] .stTextInput input{
+  min-height:44px!important;
+  border:1px solid #D7E0EC!important;
+  border-radius:11px!important;
+  background:#F8FAFD!important;
+  color:#13203B!important;
+  box-shadow:none!important;
+}
+[data-testid="stSidebar"] .stTextInput input:focus{
+  border-color:#E5AA13!important;
+  box-shadow:0 0 0 1px #E5AA13!important;
+}
+[data-testid="stSidebar"] button[data-testid="stBaseButton-primary"],
+[data-testid="stSidebar"] button[kind="primary"]{
+  min-height:44px!important;
+  border:1px solid #DFA817!important;
+  border-radius:11px!important;
+  background:var(--y)!important;
+  color:#13203B!important;
+  font-weight:800!important;
+  box-shadow:none!important;
+}
+[data-testid="stSidebar"] button[data-testid="stBaseButton-primary"]:hover,
+[data-testid="stSidebar"] button[kind="primary"]:hover{
+  background:#F7BD2A!important;
+  border-color:#D39B09!important;
+  color:#13203B!important;
+}
 
 .hero{
   display:grid;
