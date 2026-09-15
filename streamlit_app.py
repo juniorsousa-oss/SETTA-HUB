@@ -1,5 +1,3 @@
-import base64
-from pathlib import Path
 import streamlit as st
 
 st.set_page_config(
@@ -59,18 +57,7 @@ APPS = [
     },
 ]
 
-ASSETS = Path(__file__).parent / "assets"
-
-
-def image_to_data_uri(path: Path) -> str:
-    if not path.exists():
-        return ""
-    mime = "image/png" if path.suffix.lower() == ".png" else "image/jpeg"
-    encoded = base64.b64encode(path.read_bytes()).decode("utf-8")
-    return f"data:{mime};base64,{encoded}"
-
-
-hero_uri = image_to_data_uri(ASSETS / "fabrica_setta.png")
+HERO_IMAGE_URL = "https://gruposetta.com.br/wp-content/uploads/2026/03/entradaG9.jpg-2-1-scaled-e1774901671839.png"
 
 st.html(
     """
@@ -156,7 +143,8 @@ st.html(
         position:relative;
         padding:62px 5% 44px 5%;
         z-index:2;
-        background:linear-gradient(120deg,#FFFFFF 0%,#FFFFFF 72%,rgba(255,255,255,.92) 78%,rgba(255,255,255,0) 79%);
+        background:
+          linear-gradient(120deg,#FFFFFF 0%,#FFFFFF 72%,rgba(255,255,255,.92) 78%,rgba(255,255,255,0) 79%);
     }
 
     .hero h1{
@@ -246,7 +234,9 @@ st.html(
         justify-content:space-between;
         text-decoration:none !important;
         color:inherit !important;
-        background:radial-gradient(circle at 108% 110%, rgba(253,195,59,.16) 0 27%, transparent 28%),#FFFFFF;
+        background:
+           radial-gradient(circle at 108% 110%, rgba(253,195,59,.16) 0 27%, transparent 28%),
+           #FFFFFF;
         border:1px solid var(--setta-line);
         border-radius:16px;
         padding:24px 30px 22px 30px;
@@ -376,27 +366,50 @@ st.html(
     }
 
     @media(max-width:760px){
-        .topbar{height:70px;padding:0 20px;}
+        .topbar{
+            height:70px;
+            padding:0 20px;
+        }
         .brand{font-size:35px;}
         .user span:last-child{display:none;}
-        .hero{grid-template-columns:1fr;}
-        .hero-copy{padding:38px 22px 32px 22px;background:#fff;}
-        .hero h1{font-size:34px;letter-spacing:-1px;}
+        .hero{
+            grid-template-columns:1fr;
+        }
+        .hero-copy{
+            padding:38px 22px 32px 22px;
+            background:#fff;
+        }
+        .hero h1{
+            font-size:34px;
+            letter-spacing:-1px;
+        }
         .hero h2{font-size:20px;}
         .hero p{font-size:14px;}
-        .hero-image{min-height:190px;}
-        .apps-wrap{padding:18px 18px 28px 18px;margin-top:0;}
+        .hero-image{
+            min-height:190px;
+        }
+        .apps-wrap{
+            padding:18px 18px 28px 18px;
+            margin-top:0;
+        }
         .apps-grid{grid-template-columns:1fr;}
-        .app-card{min-height:175px;padding:22px;}
-        .page-footer{flex-direction:column;gap:8px;justify-content:center;text-align:center;padding:16px 18px;}
+        .app-card{
+            min-height:175px;
+            padding:22px;
+        }
+        .page-footer{
+            flex-direction:column;
+            gap:8px;
+            justify-content:center;
+            text-align:center;
+            padding:16px 18px;
+        }
     }
 </style>
 """
 )
 
-hero_style = f'background-image:url("{hero_uri}");' if hero_uri else (
-    "background:linear-gradient(135deg,#EEF3F8,#DDE4ED);"
-)
+hero_style = f'background-image:url("{HERO_IMAGE_URL}");'
 
 cards_html = ""
 for app in APPS:
