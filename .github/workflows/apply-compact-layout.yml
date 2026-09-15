@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Compacta layout para notebooks e monitores baixos
+      - name: Reduz altura do banner principal
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -23,63 +23,18 @@ jobs:
           path = Path('streamlit_app.py')
           text = path.read_text(encoding='utf-8')
 
-          text = text.replace('height:76px!important;', 'height:68px!important;', 1)
-          text = text.replace('height:76px;\n  display:flex;', 'height:68px;\n  display:flex;', 1)
-          text = text.replace('padding-top:76px;', 'padding-top:68px;', 1)
-          text = text.replace('min-height:62px;\n  border-top', 'min-height:52px;\n  border-top', 1)
+          old = 'min-height:clamp(240px,30vh,310px);'
+          if text.count(old) < 2:
+              raise SystemExit('Altura atual do banner não encontrada; nenhuma alteração realizada.')
 
-          old = '''@media (min-width:1200px) and (max-height:850px){
-            .hero{min-height:270px}
-            .hero-image{min-height:270px}
-            .hero-copy{padding-top:46px;padding-bottom:34px}
-            .app-card{min-height:205px}
-            .app-icon{width:76px;height:76px;flex-basis:76px}
-            .app-icon img{width:60px;height:60px}
-            .app-title{font-size:22px}
-            .app-desc{font-size:14px}
-            .apps-wrap{padding-bottom:24px}
-          }
-          '''
+          # O banner e a imagem passam a ocupar menos altura, preservando o recorte com background-size: cover.
+          text = text.replace(old, 'min-height:clamp(205px,24vh,255px);', 2)
 
-          new = '''@media (min-width:1200px) and (max-height:900px){
-            header[data-testid="stHeader"]{height:62px!important}
-            .hub-header-content{height:62px}
-            .page-root{padding-top:62px}
+          # Em notebooks/monitores com menor altura útil, compacta ainda mais o banner.
+          text = text.replace('.hero{min-height:230px}', '.hero{min-height:205px}', 1)
+          text = text.replace('.hero-image{min-height:230px}', '.hero-image{min-height:205px}', 1)
+          text = text.replace('.hero-copy{padding-top:32px;padding-bottom:24px}', '.hero-copy{padding-top:26px;padding-bottom:20px}', 1)
 
-            .brand-slot{height:50px}
-            .brand-logo{height:46px;max-height:46px}
-            .brand-text{font-size:36px}
-            .user-badge{width:30px;height:30px}
-            .user{font-size:13px}
-
-            .hero{min-height:230px}
-            .hero-image{min-height:230px}
-            .hero-copy{padding-top:32px;padding-bottom:24px}
-            .hero h1{font-size:38px}
-            .hero h2{font-size:22px}
-            .hero p{margin-top:12px;font-size:13px}
-
-            .apps-wrap{padding-top:8px;padding-bottom:14px;margin-top:-6px}
-            .apps-grid{gap:14px}
-            .app-card{min-height:176px;padding:18px 22px}
-            .app-icon{width:68px;height:68px;flex-basis:68px}
-            .app-icon img{width:54px;height:54px}
-            .app-title{font-size:20px;margin-top:8px}
-            .app-desc{font-size:13px;margin-top:4px}
-            .access{margin-top:12px;font-size:14px}
-            .status{padding:6px 10px;font-size:11px}
-
-            .page-footer{min-height:44px}
-            .footer-logo-slot{height:24px}
-            .footer-logo{height:24px}
-            .footer-brand-text{font-size:18px}
-          }
-          '''
-
-          if old not in text:
-              raise SystemExit('Bloco responsivo esperado não encontrado; nenhuma alteração realizada.')
-
-          text = text.replace(old, new, 1)
           path.write_text(text, encoding='utf-8')
           PY
 
@@ -88,5 +43,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add streamlit_app.py
-          git diff --cached --quiet || git commit -m "Compacta header, rodapé e cards em telas de menor altura"
+          git diff --cached --quiet || git commit -m "Reduz altura do banner principal para evitar rolagem vertical"
           git push
