@@ -461,7 +461,25 @@ header[data-testid="stHeader"]{
 }
 header[data-testid="stHeader"] *{color:var(--ink)!important}
 [data-testid="stToolbar"]{background:transparent!important}
-[data-testid="stDecoration"],#MainMenu,footer{display:none!important}
+[data-testid="stDecoration"],footer{display:none!important}
+#MainMenu,
+span[data-testid="stMainMenu"]{
+  display:flex!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+}
+span[data-testid="stMainMenu"] button{
+  color:var(--ink)!important;
+}
+span[data-testid="stMainMenu"] svg{
+  fill:var(--ink)!important;
+  color:var(--ink)!important;
+}
+/* Remove somente o botão Share do toolbar do Community Cloud */
+[data-testid="stToolbarActions"] > [data-testid="stToolbarActionButton"]:first-child,
+.stToolbarActions > .stToolbarActionButton:first-child{
+  display:none!important;
+}
 [data-testid="stSidebar"]{border-right:1px solid var(--line)!important;background:#fff!important;z-index:100005!important}
 [data-testid="stSidebar"]>div:first-child{background:#fff!important}
 .block-container{max-width:100%!important;padding:0!important;margin:0!important}
