@@ -44,6 +44,9 @@ DEFAULT_CONFIG = {
         {"nome": "Entregas", "descricao": "Controle de OPs e cronograma", "icone": "🚚", "icone_png": "", "status": "Online", "url": "#"},
         {"nome": "Compra Fácil", "descricao": "Compras e histórico de preços", "icone": "🛒", "icone_png": "", "status": "Ativo", "url": "#"},
         {"nome": "Gestão de Equipe", "descricao": "Colaboradores e plano de carreira", "icone": "👥", "icone_png": "", "status": "Online", "url": "#"},
+        {"nome": "Novo Aplicativo 7", "descricao": "Espaço disponível para novo aplicativo", "icone": "➕", "icone_png": "", "status": "Disponível", "url": "#"},
+        {"nome": "Novo Aplicativo 8", "descricao": "Espaço disponível para novo aplicativo", "icone": "➕", "icone_png": "", "status": "Disponível", "url": "#"},
+        {"nome": "Novo Aplicativo 9", "descricao": "Espaço disponível para novo aplicativo", "icone": "➕", "icone_png": "", "status": "Disponível", "url": "#"},
     ],
 }
 
@@ -90,6 +93,11 @@ def merge_config(saved):
             app.setdefault("status", "Ativo")
             app.setdefault("url", "#")
             cfg["apps"].append(app)
+
+        # Mantém os cartões já salvos e completa automaticamente até o total padrão.
+        while len(cfg["apps"]) < len(DEFAULT_CONFIG["apps"]):
+            idx = len(cfg["apps"])
+            cfg["apps"].append(copy.deepcopy(DEFAULT_CONFIG["apps"][idx]))
     return cfg
 
 
