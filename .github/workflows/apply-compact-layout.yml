@@ -1,4 +1,4 @@
-name: Add custom user avatar
+name: Add three app cards
 
 on:
   push:
@@ -15,16 +15,58 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Adiciona imagem personalizada do usuário
-        run: python -c "import base64;exec(base64.b64decode('CmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aAppbXBvcnQgcmUKCnBhdGggPSBQYXRoKCJzdHJlYW1saXRfYXBwLnB5IikKdGV4dCA9IHBhdGgucmVhZF90ZXh0KGVuY29kaW5nPSJ1dGYtOCIpCgppZiAnInVzZXJfYXZhdGFyIjogIiInIG5vdCBpbiB0ZXh0OgogICAgdGV4dCA9IHRleHQucmVwbGFjZSgKICAgICAgICAnInVzdWFyaW8iOiAiT2zDoSwgVXN1w6FyaW8iLFxuJywKICAgICAgICAnInVzdWFyaW8iOiAiT2zDoSwgVXN1w6FyaW8iLFxuICAgICJ1c2VyX2F2YXRhciI6ICIiLFxuJywKICAgICAgICAxLAogICAgKQoKaWYgJyJ1c2VyX2F2YXRhciIsJyBub3QgaW4gdGV4dDoKICAgIHRleHQgPSB0ZXh0LnJlcGxhY2UoCiAgICAgICAgJyAgICAgICAgInVzdWFyaW8iLFxuJywKICAgICAgICAnICAgICAgICAidXN1YXJpbyIsXG4gICAgICAgICJ1c2VyX2F2YXRhciIsXG4nLAogICAgICAgIDEsCiAgICApCgppZiAiZGVmIHVzZXJfYXZhdGFyX2ltYWdlIiBub3QgaW4gdGV4dDoKICAgIGF2YXRhcl9mbiA9ICcnJ2RlZiB1c2VyX2F2YXRhcl9pbWFnZSh1cGxvYWRlZF9maWxlKToKICAgIGlmIHVwbG9hZGVkX2ZpbGUgaXMgTm9uZToKICAgICAgICByZXR1cm4gIiIKICAgIGlmIHVwbG9hZGVkX2ZpbGUuc2l6ZSA+IDIgKiAxMDI0ICogMTAyNDoKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJJbWFnZW0gZG8gdXN1w6FyaW8gYWNpbWEgZGUgMiBNQi4iKQoKICAgIGltYWdlID0gSW1hZ2Uub3BlbihCeXRlc0lPKHVwbG9hZGVkX2ZpbGUuZ2V0dmFsdWUoKSkpLmNvbnZlcnQoIlJHQkEiKQogICAgc2lkZSA9IG1pbihpbWFnZS53aWR0aCwgaW1hZ2UuaGVpZ2h0KQogICAgbGVmdCA9IChpbWFnZS53aWR0aCAtIHNpZGUpIC8vIDIKICAgIHRvcCA9IChpbWFnZS5oZWlnaHQgLSBzaWRlKSAvLyAyCiAgICBpbWFnZSA9IGltYWdlLmNyb3AoKGxlZnQsIHRvcCwgbGVmdCArIHNpZGUsIHRvcCArIHNpZGUpKQogICAgaW1hZ2UgPSBpbWFnZS5yZXNpemUoKDEyOCwgMTI4KSwgSW1hZ2UuUmVzYW1wbGluZy5MQU5DWk9TKQoKICAgIG91dHB1dCA9IEJ5dGVzSU8oKQogICAgaW1hZ2Uuc2F2ZShvdXRwdXQsICJQTkciLCBvcHRpbWl6ZT1UcnVlKQogICAgcmV0dXJuICJkYXRhOmltYWdlL3BuZztiYXNlNjQsIiArIGJhc2U2NC5iNjRlbmNvZGUob3V0cHV0LmdldHZhbHVlKCkpLmRlY29kZSgpCgoKJycnCiAgICBpZiAiZGVmIHNhZmVfdXJsKHZhbHVlKToiIG5vdCBpbiB0ZXh0OgogICAgICAgIHJhaXNlIFN5c3RlbUV4aXQoIkZ1bsOnw6NvIHNhZmVfdXJsIG7Do28gZW5jb250cmFkYSIpCiAgICB0ZXh0ID0gdGV4dC5yZXBsYWNlKCJkZWYgc2FmZV91cmwodmFsdWUpOiIsIGF2YXRhcl9mbiArICJkZWYgc2FmZV91cmwodmFsdWUpOiIsIDEpCgppZiAidXNlcl9hdmF0YXJfdXBsb2FkID0gc3QuZmlsZV91cGxvYWRlciIgbm90IGluIHRleHQ6CiAgICBwYXQgPSByZS5jb21waWxlKAogICAgICAgIHInKD9QPGluZGVudD5bIFx0XSspaGVyb191cGxvYWQgPSBzdFwuZmlsZV91cGxvYWRlclwoXG4nCiAgICAgICAgcicoP1A9aW5kZW50KSAgICAiSW1hZ2VtIHByaW5jaXBhbCIsXG4nCiAgICAgICAgcicoP1A9aW5kZW50KSAgICB0eXBlPVxbInBuZyIsICJqcGciLCAianBlZyIsICJ3ZWJwIlxdLFxuJwogICAgICAgIHInKD9QPWluZGVudCkgICAga2V5PWYiaFx7dXZcfSIsXG4nCiAgICAgICAgcicoP1A9aW5kZW50KVwpXG4nCiAgICApCiAgICBtID0gcGF0LnNlYXJjaCh0ZXh0KQogICAgaWYgbm90IG06CiAgICAgICAgcmFpc2UgU3lzdGVtRXhpdCgiVXBsb2FkZXIgZGEgaW1hZ2VtIHByaW5jaXBhbCBuw6NvIGVuY29udHJhZG8iKQogICAgaW5kZW50ID0gbS5ncm91cCgiaW5kZW50IikKICAgIGFkZGl0aW9uID0gKAogICAgICAgIG0uZ3JvdXAoMCkKICAgICAgICArIGYne2luZGVudH11c2VyX2F2YXRhcl91cGxvYWQgPSBzdC5maWxlX3VwbG9hZGVyKFxuJwogICAgICAgICsgZid7aW5kZW50fSAgICAiSW1hZ2VtIGRvIHVzdcOhcmlvIixcbicKICAgICAgICArIGYne2luZGVudH0gICAgdHlwZT1bInBuZyIsICJqcGciLCAianBlZyIsICJ3ZWJwIl0sXG4nCiAgICAgICAgKyBmJ3tpbmRlbnR9ICAgIGtleT1mImF2YXRhcnt7dXZ9fSIsXG4nCiAgICAgICAgKyBmJ3tpbmRlbnR9ICAgIGhlbHA9IkEgaW1hZ2VtIHNlcsOhIHJlY29ydGFkYSBhdXRvbWF0aWNhbWVudGUgZSBleGliaWRhIGRlbnRybyBkbyBjw61yY3VsbyBkbyB1c3XDoXJpby4iLFxuJwogICAgICAgICsgZid7aW5kZW50fSlcbicKICAgICkKICAgIHRleHQgPSB0ZXh0WzptLnN0YXJ0KCldICsgYWRkaXRpb24gKyB0ZXh0W20uZW5kKCk6XQoKaWYgJ2NsZWFyX3VzZXJfYXZhdGFyID0gc3QuY2hlY2tib3gnIG5vdCBpbiB0ZXh0OgogICAgdGV4dCA9IHRleHQucmVwbGFjZSgKICAgICAgICAnICAgICAgICAgICAgY2xlYXJfaGVybyA9IHN0LmNoZWNrYm94KCJVc2FyIGltYWdlbSBwcmluY2lwYWwgcGFkcsOjbyIpXG4nLAogICAgICAgICcgICAgICAgICAgICBjbGVhcl9oZXJvID0gc3QuY2hlY2tib3goIlVzYXIgaW1hZ2VtIHByaW5jaXBhbCBwYWRyw6NvIilcbicKICAgICAgICAnICAgICAgICAgICAgY2xlYXJfdXNlcl9hdmF0YXIgPSBzdC5jaGVja2JveCgiUmVtb3ZlciBpbWFnZW0gZG8gdXN1w6FyaW8gZSB1c2FyIMOtY29uZSBwYWRyw6NvIilcbicsCiAgICAgICAgMSwKICAgICApCgppZiAnc3QuY2FwdGlvbigiSW1hZ2VtIGF0dWFsIGRvIHVzdcOhcmlvIiknIG5vdCBpbiB0ZXh0OgogICAgbWFya2VyID0gJyAgICAgICAgICAgICAgICBzdC5pbWFnZShjZmdbImxvZ29fdG9wIl0sIHdpZHRoPTE1MClcblxuJwogICAgaWYgbWFya2VyIG5vdCBpbiB0ZXh0OgogICAgICAgIHJhaXNlIFN5c3RlbUV4aXQoIlByZXZpZXcgZGEgbG9nbyBzdXBlcmlvciBuw6NvIGVuY29udHJhZG8iKQogICAgdGV4dCA9IHRleHQucmVwbGFjZSgKICAgICAgICBtYXJrZXIsCiAgICAgICAgbWFya2VyCiAgICAgICAgKyAnICAgICAgICAgICAgaWYgY2ZnLmdldCgidXNlcl9hdmF0YXIiKTpcbicKICAgICAgICAgICcgICAgICAgICAgICAgICAgc3QuY2FwdGlvbigiSW1hZ2VtIGF0dWFsIGRvIHVzdcOhcmlvIilcbicKICAgICAgICAgICcgICAgICAgICAgICAgICAgc3QuaW1hZ2UoY2ZnWyJ1c2VyX2F2YXRhciJdLCB3aWR0aD03MilcblxuJywKICAgICAgICAxLAogICAgKQoKaWYgJ25ld19jZmdbInVzZXJfYXZhdGFyIl0nIG5vdCBpbiB0ZXh0OgogICAgbWFya2VyID0gJyAgICAgICAgICAgICAgICAgICAgbmV3X2NmZ1siaGVyb19pbWFnZSJdID0gZGF0YV91cmkoaGVyb191cGxvYWQsIDQpXG5cbicKICAgIGlmIG1hcmtlciBub3QgaW4gdGV4dDoKICAgICAgICByYWlzZSBTeXN0ZW1FeGl0KCJTYWx2YW1lbnRvIGRhIGltYWdlbSBwcmluY2lwYWwgbsOjbyBlbmNvbnRyYWRvIikKICAgIHRleHQgPSB0ZXh0LnJlcGxhY2UoCiAgICAgICAgbWFya2VyLAogICAgICAgIG1hcmtlcgogICAgICAgICsgJyAgICAgICAgICAgICAgICBpZiBjbGVhcl91c2VyX2F2YXRhcjpcbicKICAgICAgICAgICcgICAgICAgICAgICAgICAgICAgIG5ld19jZmdbInVzZXJfYXZhdGFyIl0gPSAiIlxuJwogICAgICAgICAgJyAgICAgICAgICAgICAgICBlbGlmIHVzZXJfYXZhdGFyX3VwbG9hZDpcbicKICAgICAgICAgICcgICAgICAgICAgICAgICAgICAgIG5ld19jZmdbInVzZXJfYXZhdGFyIl0gPSB1c2VyX2F2YXRhcl9pbWFnZSh1c2VyX2F2YXRhcl91cGxvYWQpXG5cbicsCiAgICAgICAgMSwKICAgICApCgppZiAiLnVzZXItYmFkZ2UgaW1neyIgbm90IGluIHRleHQ6CiAgICBjc3NfbWFya2VyID0gJy51c2VyLWJhZGdlIHN2Z3tkaXNwbGF5OmJsb2NrO3dpZHRoOjE4cHg7aGVpZ2h0OjE4cHg7bWluLXdpZHRoOjE4cHg7bWluLWhlaWdodDoxOHB4O2ZpbGw6IzIzMzI0QTtzdHJva2U6bm9uZX1cbicKICAgIGlmIGNzc19tYXJrZXIgbm90IGluIHRleHQ6CiAgICAgICAgcmFpc2UgU3lzdGVtRXhpdCgiQ1NTIGRvIFNWRyBkZSB1c3XDoXJpbyBuw6NvIGVuY29udHJhZG8iKQogICAgdGV4dCA9IHRleHQucmVwbGFjZSgKICAgICAgICBjc3NfbWFya2VyLAogICAgICAgIGNzc19tYXJrZXIgKyAnLnVzZXItYmFkZ2UgaW1ne2Rpc3BsYXk6YmxvY2s7d2lkdGg6MTAwJTtoZWlnaHQ6MTAwJTtvYmplY3QtZml0OmNvdmVyO29iamVjdC1wb3NpdGlvbjpjZW50ZXI7Ym9yZGVyLXJhZGl1czo1MCV9XG4nLAogICAgICAgIDEsCiAgICApCgp0ZXh0ID0gcmUuc3ViKHInXG4/XC51c2VyLWNoZXZyb25ce1tefV0qXH0nLCAnJywgdGV4dCwgY291bnQ9MSkKCmlmICJ1c2VyX2F2YXRhcl9odG1sID0gKCIgbm90IGluIHRleHQ6CiAgICBtYXJrZXIgPSAnJydsb2dvX2Zvb3RlciA9ICgKICAgIGYnPGltZyBjbGFzcz0iZm9vdGVyLWxvZ28iIHNyYz0ie2NmZ1sibG9nb19mb290ZXIiXX0iIGFsdD0iTG9nbyI+JwogICAgaWYgY2ZnLmdldCgibG9nb19mb290ZXIiKQogICAgZWxzZSAnPGRpdiBjbGFzcz0iZm9vdGVyLWJyYW5kLXRleHQiPlNldHRhPC9kaXY+JwopCgonJycKICAgIGlmIG1hcmtlciBub3QgaW4gdGV4dDoKICAgICAgICByYWlzZSBTeXN0ZW1FeGl0KCJCbG9jbyBsb2dvX2Zvb3RlciBuw6NvIGVuY29udHJhZG8iKQogICAgYXZhdGFyX2h0bWwgPSBtYXJrZXIgKyAnJyd1c2VyX2F2YXRhcl9odG1sID0gKAogICAgZic8aW1nIHNyYz0ie2NmZ1sidXNlcl9hdmF0YXIiXX0iIGFsdD0iVXN1w6FyaW8iPicKICAgIGlmIGNmZy5nZXQoInVzZXJfYXZhdGFyIikKICAgIGVsc2UgJzxzdmcgdmlld0JveD0iMCAwIDI0IDI0IiBhcmlhLWhpZGRlbj0idHJ1ZSIgZm9jdXNhYmxlPSJmYWxzZSI+PGNpcmNsZSBjeD0iMTIiIGN5PSI4IiByPSI0Ij48L2NpcmNsZT48cGF0aCBkPSJNNC41IDIwYy40NS00LjA1IDMuMTgtNi4yIDcuNS02LjJzNy4wNSAyLjE1IDcuNSA2LjJINC41eiI+PC9wYXRoPjwvc3ZnPicKKQoKJycnCiAgICB0ZXh0ID0gdGV4dC5yZXBsYWNlKG1hcmtlciwgYXZhdGFyX2h0bWwsIDEpCgpvbGRfZnJhZ21lbnQgPSAnPGRpdiBjbGFzcz0idXNlci1iYWRnZSI+PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiIGFyaWEtaGlkZGVuPSJ0cnVlIiBmb2N1c2FibGU9ImZhbHNlIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjgiIHI9IjQiPjwvY2lyY2xlPjxwYXRoIGQ9Ik00LjUgMjBjLjQ1LTQuMDUgMy4xOC02LjIgNy41LTYuMnM3LjA1IDIuMTUgNy41IDYuMkg0LjV6Ij48L3BhdGg+PC9zdmc+PC9kaXY+PHNwYW4+e2VzYyhjZmdbInVzdWFyaW8iXSl9PC9zcGFuPjxzcGFuIGNsYXNzPSJ1c2VyLWNoZXZyb24iPuKMhDwvc3Bhbj4nCm5ld19mcmFnbWVudCA9ICc8ZGl2IGNsYXNzPSJ1c2VyLWJhZGdlIj57dXNlcl9hdmF0YXJfaHRtbH08L2Rpdj48c3Bhbj57ZXNjKGNmZ1sidXN1YXJpbyJdKX08L3NwYW4+JwppZiBvbGRfZnJhZ21lbnQgaW4gdGV4dDoKICAgIHRleHQgPSB0ZXh0LnJlcGxhY2Uob2xkX2ZyYWdtZW50LCBuZXdfZnJhZ21lbnQsIDEpCmVsc2U6CiAgICB0ZXh0ID0gcmUuc3ViKAogICAgICAgIHInPGRpdiBjbGFzcz0idXNlci1iYWRnZSI+Lio/PC9kaXY+PHNwYW4+XHtlc2NcKGNmZ1xbInVzdWFyaW8iXF1cKVx9PC9zcGFuPjxzcGFuIGNsYXNzPSJ1c2VyLWNoZXZyb24iPuKMhDwvc3Bhbj4nLAogICAgICAgICc8ZGl2IGNsYXNzPSJ1c2VyLWJhZGdlIj57dXNlcl9hdmF0YXJfaHRtbH08L2Rpdj48c3Bhbj57ZXNjKGNmZ1sidXN1YXJpbyJdKX08L3NwYW4+JywKICAgICAgICB0ZXh0LAogICAgICAgIGNvdW50PTEsCiAgICApCgppZiAnPHNwYW4gY2xhc3M9InVzZXItY2hldnJvbiI+JyBpbiB0ZXh0OgogICAgcmFpc2UgU3lzdGVtRXhpdCgiQSBzZXRhIGRvIHVzdcOhcmlvIGFpbmRhIGVzdMOHIHByZXNlbnRlIikKCnBhdGgud3JpdGVfdGV4dCh0ZXh0LCBlbmNvZGluZz0idXRmLTgiKQo='))"
+      - name: Adiciona três novos cartões configuráveis
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("streamlit_app.py")
+          text = path.read_text(encoding="utf-8")
+
+          anchor = '''        {"nome": "Gestão de Equipe", "descricao": "Colaboradores e plano de carreira", "icone": "👥", "icone_png": "", "status": "Online", "url": "#"},
+    ],
+}'''
+
+          replacement = '''        {"nome": "Gestão de Equipe", "descricao": "Colaboradores e plano de carreira", "icone": "👥", "icone_png": "", "status": "Online", "url": "#"},
+        {"nome": "Novo Aplicativo 7", "descricao": "Espaço disponível para novo aplicativo", "icone": "➕", "icone_png": "", "status": "Disponível", "url": "#"},
+        {"nome": "Novo Aplicativo 8", "descricao": "Espaço disponível para novo aplicativo", "icone": "➕", "icone_png": "", "status": "Disponível", "url": "#"},
+        {"nome": "Novo Aplicativo 9", "descricao": "Espaço disponível para novo aplicativo", "icone": "➕", "icone_png": "", "status": "Disponível", "url": "#"},
+    ],
+}'''
+
+          if '"Novo Aplicativo 7"' not in text:
+              if anchor not in text:
+                  raise SystemExit("Lista padrão de aplicativos não encontrada")
+              text = text.replace(anchor, replacement, 1)
+
+          merge_anchor = '''            app.setdefault("url", "#")
+            cfg["apps"].append(app)
+    return cfg'''
+
+          merge_replacement = '''            app.setdefault("url", "#")
+            cfg["apps"].append(app)
+
+        # Mantém os cartões já salvos e completa automaticamente até o total padrão.
+        while len(cfg["apps"]) < len(DEFAULT_CONFIG["apps"]):
+            idx = len(cfg["apps"])
+            cfg["apps"].append(copy.deepcopy(DEFAULT_CONFIG["apps"][idx]))
+    return cfg'''
+
+          if 'while len(cfg["apps"]) < len(DEFAULT_CONFIG["apps"])' not in text:
+              if merge_anchor not in text:
+                  raise SystemExit("Função merge_config não encontrada")
+              text = text.replace(merge_anchor, merge_replacement, 1)
+
+          path.write_text(text, encoding="utf-8")
+          PY
 
       - name: Valida sintaxe Python
         run: python -m py_compile streamlit_app.py
 
-      - name: Commit da personalização do usuário
+      - name: Commit dos novos cartões
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add streamlit_app.py
-          git diff --cached --quiet || git commit -m "Permite imagem personalizada no usuário"
+          git diff --cached --quiet || git commit -m "Adiciona três novos cartões configuráveis"
           git push
