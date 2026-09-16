@@ -16,41 +16,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Remove Share e restaura menu de tema
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          path = Path("streamlit_app.py")
-          text = path.read_text(encoding="utf-8")
-
-          old = '[data-testid="stDecoration"],#MainMenu,footer{display:none!important}'
-          new = '''[data-testid="stDecoration"],footer{display:none!important}
-#MainMenu,
-span[data-testid="stMainMenu"]{
-  display:flex!important;
-  visibility:visible!important;
-  pointer-events:auto!important;
-}
-span[data-testid="stMainMenu"] button{
-  color:var(--ink)!important;
-}
-span[data-testid="stMainMenu"] svg{
-  fill:var(--ink)!important;
-  color:var(--ink)!important;
-}
-/* Remove somente o botão Share do toolbar do Community Cloud */
-[data-testid="stToolbarActions"] > [data-testid="stToolbarActionButton"]:first-child,
-.stToolbarActions > .stToolbarActionButton:first-child{
-  display:none!important;
-}'''
-
-          if old in text:
-              text = text.replace(old, new, 1)
-          elif 'Remove somente o botão Share do toolbar do Community Cloud' not in text:
-              raise SystemExit("Trecho do toolbar não encontrado para atualização")
-
-          path.write_text(text, encoding="utf-8")
-          PY
+        run: python -c "import base64;exec(base64.b64decode('CmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aAoKcGF0aCA9IFBhdGgoInN0cmVhbWxpdF9hcHAucHkiKQp0ZXh0ID0gcGF0aC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikKCm9sZCA9ICdbZGF0YS10ZXN0aWQ9InN0RGVjb3JhdGlvbiJdLCNNYWluTWVudSxmb290ZXJ7ZGlzcGxheTpub25lIWltcG9ydGFudH0nCm5ldyA9ICcnJ1tkYXRhLXRlc3RpZD0ic3REZWNvcmF0aW9uIl0sZm9vdGVye2Rpc3BsYXk6bm9uZSFpbXBvcnRhbnR9CiNNYWluTWVudSwKc3BhbltkYXRhLXRlc3RpZD0ic3RNYWluTWVudSJdewogIGRpc3BsYXk6ZmxleCFpbXBvcnRhbnQ7CiAgdmlzaWJpbGl0eTp2aXNpYmxlIWltcG9ydGFudDsKICBwb2ludGVyLWV2ZW50czphdXRvIWltcG9ydGFudDsKfQpzcGFuW2RhdGEtdGVzdGlkPSJzdE1haW5NZW51Il0gYnV0dG9uewogIGNvbG9yOnZhcigtLWluaykhaW1wb3J0YW50Owp9CnNwYW5bZGF0YS10ZXN0aWQ9InN0TWFpbk1lbnUiXSBzdmd7CiAgZmlsbDp2YXIoLS1pbmspIWltcG9ydGFudDsKICBjb2xvcjp2YXIoLS1pbmspIWltcG9ydGFudDsKfQovKiBSZW1vdmUgc29tZW50ZSBvIGJvdMOjbyBTaGFyZSBkbyB0b29sYmFyIGRvIENvbW11bml0eSBDbG91ZCAqLwpbZGF0YS10ZXN0aWQ9InN0VG9vbGJhckFjdGlvbnMiXSA+IFtkYXRhLXRlc3RpZD0ic3RUb29sYmFyQWN0aW9uQnV0dG9uIl06Zmlyc3QtY2hpbGQsCi5zdFRvb2xiYXJBY3Rpb25zID4gLnN0VG9vbGJhckFjdGlvbkJ1dHRvbjpmaXJzdC1jaGlsZHsKICBkaXNwbGF5Om5vbmUhaW1wb3J0YW50Owp9JycnCgppZiBvbGQgaW4gdGV4dDoKICAgIHRleHQgPSB0ZXh0LnJlcGxhY2Uob2xkLCBuZXcsIDEpCmVsaWYgJ1JlbW92ZSBzb21lbnRlIG8gYm90w6NvIFNoYXJlIGRvIHRvb2xiYXIgZG8gQ29tbXVuaXR5IENsb3VkJyBub3QgaW4gdGV4dDoKICAgIHJhaXNlIFN5c3RlbUV4aXQoIlRyZWNobyBkbyB0b29sYmFyIG7Do28gZW5jb250cmFkbyBwYXJhIGF0dWFsaXphw6fDo28iKQoKcGF0aC53cml0ZV90ZXh0KHRleHQsIGVuY29kaW5nPSJ1dGYtOCIpCg=='))"
 
       - name: Valida sintaxe Python
         run: python -m py_compile streamlit_app.py
