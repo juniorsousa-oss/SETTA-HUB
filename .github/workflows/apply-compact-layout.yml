@@ -1,4 +1,4 @@
-name: Add three app cards
+name: Adjust top toolbar
 
 on:
   push:
@@ -15,16 +15,50 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Adiciona três novos cartões configuráveis
-        run: python -c "import base64;exec(base64.b64decode('ZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCgpwYXRoID0gUGF0aCgic3RyZWFtbGl0X2FwcC5weSIpCnRleHQgPSBwYXRoLnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKQoKYW5jaG9yID0gJyAgICAgICAgeyJub21lIjogIkdlc3TDo28gZGUgRXF1aXBlIiwgImRlc2NyaWNhbyI6ICJDb2xhYm9yYWRvcmVzIGUgcGxhbm8gZGUgY2FycmVpcmEiLCAiaWNvbmUiOiAi8J+RpSIsICJpY29uZV9wbmciOiAiIiwgInN0YXR1cyI6ICJPbmxpbmUiLCAidXJsIjogIiMifSxcbiAgICBdLFxufScKcmVwbGFjZW1lbnQgPSAnICAgICAgICB7Im5vbWUiOiAiR2VzdMOjbyBkZSBFcXVpcGUiLCAiZGVzY3JpY2FvIjogIkNvbGFib3JhZG9yZXMgZSBwbGFubyBkZSBjYXJyZWlyYSIsICJpY29uZSI6ICLwn5GlIiwgImljb25lX3BuZyI6ICIiLCAic3RhdHVzIjogIk9ubGluZSIsICJ1cmwiOiAiIyJ9LFxuICAgICAgICB7Im5vbWUiOiAiTm92byBBcGxpY2F0aXZvIDciLCAiZGVzY3JpY2FvIjogIkVzcGHDp28gZGlzcG9uw612ZWwgcGFyYSBub3ZvIGFwbGljYXRpdm8iLCAiaWNvbmUiOiAi4p6VIiwgImljb25lX3BuZyI6ICIiLCAic3RhdHVzIjogIkRpc3BvbsOtdmVsIiwgInVybCI6ICIjIn0sXG4gICAgICAgIHsibm9tZSI6ICJOb3ZvIEFwbGljYXRpdm8gOCIsICJkZXNjcmljYW8iOiAiRXNwYcOnbyBkaXNwb27DrXZlbCBwYXJhIG5vdm8gYXBsaWNhdGl2byIsICJpY29uZSI6ICLinpUiLCAiaWNvbmVfcG5nIjogIiIsICJzdGF0dXMiOiAiRGlzcG9uw612ZWwiLCAidXJsIjogIiMifSxcbiAgICAgICAgeyJub21lIjogIk5vdm8gQXBsaWNhdGl2byA5IiwgImRlc2NyaWNhbyI6ICJFc3Bhw6dvIGRpc3BvbsOtdmVsIHBhcmEgbm92byBhcGxpY2F0aXZvIiwgImljb25lIjogIuKelSIsICJpY29uZV9wbmciOiAiIiwgInN0YXR1cyI6ICJEaXNwb27DrXZlbCIsICJ1cmwiOiAiIyJ9LFxuICAgIF0sXG59JwoKaWYgJyJOb3ZvIEFwbGljYXRpdm8gNyInIG5vdCBpbiB0ZXh0OgogICAgaWYgYW5jaG9yIG5vdCBpbiB0ZXh0OgogICAgICAgIHJhaXNlIFN5c3RlbUV4aXQoIkxpc3RhIHBhZHLDo28gZGUgYXBsaWNhdGl2b3MgbsOjbyBlbmNvbnRyYWRhIikKICAgIHRleHQgPSB0ZXh0LnJlcGxhY2UoYW5jaG9yLCByZXBsYWNlbWVudCwgMSkKCm1lcmdlX2FuY2hvciA9ICcgICAgICAgICAgICBhcHAuc2V0ZGVmYXVsdCgidXJsIiwgIiMiKVxuICAgICAgICAgICAgY2ZnWyJhcHBzIl0uYXBwZW5kKGFwcClcbiAgICByZXR1cm4gY2ZnJwptZXJnZV9yZXBsYWNlbWVudCA9ICcgICAgICAgICAgICBhcHAuc2V0ZGVmYXVsdCgidXJsIiwgIiMiKVxuICAgICAgICAgICAgY2ZnWyJhcHBzIl0uYXBwZW5kKGFwcClcblxuICAgICAgICAjIE1hbnTDqW0gb3MgY2FydMO1ZXMgasOhIHNhbHZvcyBlIGNvbXBsZXRhIGF1dG9tYXRpY2FtZW50ZSBhdMOpIG8gdG90YWwgcGFkcsOjby5cbiAgICAgICAgd2hpbGUgbGVuKGNmZ1siYXBwcyJdKSA8IGxlbihERUZBVUxUX0NPTkZJR1siYXBwcyJdKTpcbiAgICAgICAgICAgIGlkeCA9IGxlbihjZmdbImFwcHMiXSlcbiAgICAgICAgICAgIGNmZ1siYXBwcyJdLmFwcGVuZChjb3B5LmRlZXBjb3B5KERFRkFVTFRfQ09ORklHWyJhcHBzIl1baWR4XSkpXG4gICAgcmV0dXJuIGNmZycKCmlmICd3aGlsZSBsZW4oY2ZnWyJhcHBzIl0pIDwgbGVuKERFRkFVTFRfQ09ORklHWyJhcHBzIl0pJyBub3QgaW4gdGV4dDoKICAgIGlmIG1lcmdlX2FuY2hvciBub3QgaW4gdGV4dDoKICAgICAgICByYWlzZSBTeXN0ZW1FeGl0KCJGdW7Dp8OjbyBtZXJnZV9jb25maWcgbsOjbyBlbmNvbnRyYWRhIikKICAgIHRleHQgPSB0ZXh0LnJlcGxhY2UobWVyZ2VfYW5jaG9yLCBtZXJnZV9yZXBsYWNlbWVudCwgMSkKCnBhdGgud3JpdGVfdGV4dCh0ZXh0LCBlbmNvZGluZz0idXRmLTgiKQo='))"
+      - name: Remove Share e restaura menu de tema
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("streamlit_app.py")
+          text = path.read_text(encoding="utf-8")
+
+          old = '[data-testid="stDecoration"],#MainMenu,footer{display:none!important}'
+          new = '''[data-testid="stDecoration"],footer{display:none!important}
+#MainMenu,
+span[data-testid="stMainMenu"]{
+  display:flex!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+}
+span[data-testid="stMainMenu"] button{
+  color:var(--ink)!important;
+}
+span[data-testid="stMainMenu"] svg{
+  fill:var(--ink)!important;
+  color:var(--ink)!important;
+}
+/* Remove somente o botão Share do toolbar do Community Cloud */
+[data-testid="stToolbarActions"] > [data-testid="stToolbarActionButton"]:first-child,
+.stToolbarActions > .stToolbarActionButton:first-child{
+  display:none!important;
+}'''
+
+          if old in text:
+              text = text.replace(old, new, 1)
+          elif 'Remove somente o botão Share do toolbar do Community Cloud' not in text:
+              raise SystemExit("Trecho do toolbar não encontrado para atualização")
+
+          path.write_text(text, encoding="utf-8")
+          PY
 
       - name: Valida sintaxe Python
         run: python -m py_compile streamlit_app.py
 
-      - name: Commit dos novos cartões
+      - name: Commit do menu superior
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add streamlit_app.py
-          git diff --cached --quiet || git commit -m "Adiciona três novos cartões configuráveis"
+          git diff --cached --quiet || git commit -m "Remove Share e restaura menu de aparência"
           git push
