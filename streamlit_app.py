@@ -14,7 +14,7 @@ from PIL import Image
 favicon = Image.open("favicon.png.png")
 
 st.set_page_config(
-    page_title="ALMOXHUB | SETTA",
+    page_title="OPERA HUB | SETTA",
     page_icon=favicon,
     layout="wide",
     initial_sidebar_state="collapsed",
