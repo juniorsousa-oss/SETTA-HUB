@@ -514,23 +514,16 @@ span[data-testid="stMainMenu"] svg{
 .user-badge svg{display:block;width:18px;height:18px;min-width:18px;min-height:18px;fill:#23324A;stroke:none}
 .user-badge img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:50%}
 
-/* Botão nativo do Streamlit Community Cloud: Gerenciar aplicativo */
+/* Oculta o selo nativo "Gerenciar aplicativo" do Streamlit Community Cloud.
+   O gerenciamento segue disponível pelo painel do Streamlit Cloud. */
 [data-testid="manage_app_button"],
 button[data-testid="manage_app_button"],
+[class*="viewerBadge"],
 [class*="viewerBadge"] button,
 [class*="viewerBadge"] a{
-  background:var(--y)!important;
-  color:var(--ink)!important;
-  border-color:#DFA817!important;
-  box-shadow:0 4px 12px rgba(31,45,73,.12)!important;
-}
-[data-testid="manage_app_button"] *,
-button[data-testid="manage_app_button"] *,
-[class*="viewerBadge"] button *,
-[class*="viewerBadge"] a *{
-  color:var(--ink)!important;
-  fill:var(--ink)!important;
-  stroke:var(--ink)!important;
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
 }
 
 /* Login administrativo com a mesma linguagem visual do SETTA HUB */
