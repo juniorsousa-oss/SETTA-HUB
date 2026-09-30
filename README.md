@@ -38,3 +38,8 @@ streamlit run streamlit_app.py
 - Repositório: selecione este projeto no GitHub.
 - Branch: `main`
 - Main file path: `streamlit_app.py`
+
+
+## Padrão visual SETTA
+
+Todos os aplicativos internos SETTA devem seguir o padrão visual oficial documentado em `SETTA_DESIGN_SYSTEM.md`. Até nova decisão, o **FECHAMENTO-MENSAL** é a referência base para novos layouts e para a evolução gradual dos aplicativos existentes.
