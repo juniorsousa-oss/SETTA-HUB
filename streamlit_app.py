@@ -629,70 +629,79 @@ button[data-testid="manage_app_button"],
 
 .apps-wrap{
   width:100%;
-  padding:clamp(12px,1.2vw,18px) var(--page-pad) clamp(24px,2.4vw,36px);
+  padding:clamp(10px,1vw,16px) var(--page-pad) clamp(14px,1.3vw,22px);
   position:relative;
   z-index:5;
   flex:1 0 auto;
-  display:flex;
-  align-items:flex-start;
 }
 .apps-grid{
-  width:100%;
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:clamp(16px,1.35vw,22px);
+  gap:clamp(12px,1vw,18px);
 }
 .app-card{
   position:relative;
-  min-height:180px;
+  min-height:150px;
   display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
+  flex-direction:column;
+  justify-content:space-between;
+  text-align:left;
   text-decoration:none!important;
   color:inherit!important;
-  background:radial-gradient(circle at 108% 112%,rgba(253,195,59,.11) 0 30%,transparent 31%),#fff;
+  background:radial-gradient(circle at 108% 112%,rgba(253,195,59,.13) 0 28%,transparent 29%),#fff;
   border:1px solid var(--line);
-  border-radius:18px;
-  padding:24px 18px;
+  border-radius:15px;
+  padding:20px 22px 17px;
   box-shadow:0 6px 18px rgba(44,62,92,.045);
   transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
 }
 .app-card:hover{
-  transform:translateY(-4px);
+  transform:translateY(-3px);
   box-shadow:0 12px 26px rgba(44,62,92,.10);
   border-color:#D9DEE7;
 }
 .card-content{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:14px;
-  width:100%;
+  display:grid;
+  grid-template-columns:64px minmax(0,1fr);
+  gap:16px;
+  align-items:start;
+  padding-right:90px;
 }
 .app-icon{
-  width:82px;
-  height:82px;
-  border-radius:20px;
+  width:64px;
+  height:64px;
+  border-radius:14px;
   display:flex;
   align-items:center;
   justify-content:center;
   background:#FFF7E2;
   overflow:hidden;
-  flex:0 0 82px;
+  flex:0 0 64px;
 }
-.app-icon img{width:62px;height:62px;object-fit:contain}
-.app-icon-emoji{font-size:38px}
-.card-copy{min-width:0}
-.app-title{
-  color:#111A36;
-  font-weight:850;
-  font-size:clamp(15px,.95vw,18px);
-  line-height:1.2;
-  text-align:center;
+.app-icon img{width:50px;height:50px;object-fit:contain}
+.app-icon-emoji{font-size:32px}
+.card-copy{min-width:0;padding-top:4px}
+.status{
+  position:absolute;
+  top:18px;
+  right:20px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  background:#E9F9EF;
+  color:#15883F;
+  font-size:clamp(10px,.7vw,12px);
+  font-weight:700;
+  border-radius:999px;
+  padding:6px 10px;
+  white-space:nowrap;
 }
-.status,.dot,.app-desc,.access,.access-arrow{display:none!important}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--green);flex:0 0 9px}
+.app-title{color:#111A36;font-weight:900;font-size:clamp(18px,1.08vw,21px);line-height:1.16}
+.app-desc{margin-top:5px;color:#71809B;font-size:clamp(12px,.78vw,14px);line-height:1.35;max-width:95%}
+.access{margin-top:14px;color:#F1A000;font-size:clamp(13px,.82vw,15px);font-weight:800;display:flex;align-items:center;gap:8px}
+.access-arrow{font-size:18px;line-height:1;transition:transform .18s ease}
+.app-card:hover .access-arrow{transform:translateX(3px)}
 
 .page-footer{min-height:40px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 var(--page-pad);background:#fff;color:#97A2B8;font-size:clamp(8px,.58vw,10px);letter-spacing:1.8px;text-transform:uppercase;margin-top:auto}
 .footer-brand{display:flex;align-items:center;gap:10px;min-width:0}
@@ -711,12 +720,16 @@ button[data-testid="manage_app_button"],
   .user-badge{width:30px;height:30px;flex-basis:30px}
   .user-badge svg{width:17px;height:17px;min-width:17px;min-height:17px}
   .user{font-size:12px}
-  .apps-wrap{padding-top:10px;padding-bottom:20px}
-  .apps-grid{gap:14px}
-  .app-card{min-height:155px;padding:18px 14px}
-  .app-icon{width:68px;height:68px;flex-basis:68px}
-  .app-icon img{width:52px;height:52px}
-  .app-title{font-size:15px}
+  .apps-wrap{padding-top:8px;padding-bottom:10px}
+  .apps-grid{gap:12px}
+  .app-card{min-height:140px;padding:16px 18px 14px}
+  .card-content{grid-template-columns:58px minmax(0,1fr);gap:13px;padding-right:82px}
+  .app-icon{width:58px;height:58px;flex-basis:58px}
+  .app-icon img{width:46px;height:46px}
+  .app-title{font-size:18px}
+  .app-desc{font-size:12px}
+  .status{top:15px;right:16px;padding:5px 9px}
+  .access{margin-top:10px;font-size:13px}
   .page-footer{min-height:34px}
   .footer-logo-slot{height:20px}
   .footer-logo{height:20px}
@@ -726,7 +739,7 @@ button[data-testid="manage_app_button"],
   :root{--page-pad:clamp(20px,3vw,42px)}
   .user{right:165px}
 }
-@media (max-width:920px){
+@media (max-width:1120px){
   .apps-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .user{display:none}
 }
@@ -737,20 +750,19 @@ button[data-testid="manage_app_button"],
   .brand-slot{width:145px;height:48px}
   .brand-logo{width:145px;height:44px}
   .brand-text{font-size:34px}
-  .apps-wrap{padding:18px 16px 20px}
-  .apps-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-  .app-card{min-height:138px;padding:16px 10px;border-radius:15px}
-  .card-content{gap:10px}
-  .app-icon{width:62px;height:62px;flex-basis:62px;border-radius:16px}
-  .app-icon img{width:46px;height:46px}
-  .app-icon-emoji{font-size:31px}
-  .app-title{font-size:13px}
+  .apps-wrap{padding:12px 18px 18px}
+  .apps-grid{grid-template-columns:1fr;gap:12px}
+  .app-card{min-height:145px;padding:18px}
+  .card-content{grid-template-columns:60px minmax(0,1fr);padding-right:70px;gap:14px}
+  .app-icon{width:60px;height:60px;flex-basis:60px;border-radius:14px}
+  .app-icon img{width:48px;height:48px}
+  .app-icon-emoji{font-size:32px}
+  .app-title{font-size:17px}
   .page-footer{flex-direction:column;gap:8px;padding:10px 18px;text-align:center}
   .footer-brand{justify-content:center;flex-wrap:wrap}
 }
 @media (max-width:420px){
-  .apps-grid{grid-template-columns:1fr}
-  .app-card{min-height:132px}
+  .app-card{min-height:138px}
 }
 </style>'''
 
@@ -786,8 +798,10 @@ for app in cfg["apps"]:
         f'<a class="app-card" href="{esc(safe_url(app.get("url", "#")))}" target="_blank" rel="noopener noreferrer">'
         f'<div class="card-content">'
         f'<div class="app-icon">{icon_html(app)}</div>'
-        f'<div class="card-copy"><div class="app-title">{esc(app.get("nome", "Aplicativo"))}</div></div>'
-        f'</div></a>'
+        f'<div class="card-copy"><div class="app-title">{esc(app.get("nome", "Aplicativo"))}</div>'
+        f'<div class="app-desc">{esc(app.get("descricao", ""))}</div></div></div>'
+        f'<div class="status"><span class="dot"></span>{esc(app.get("status", "Ativo"))}</div>'
+        f'<div class="access">Acessar <span class="access-arrow">→</span></div></a>'
     )
 
 page = (
