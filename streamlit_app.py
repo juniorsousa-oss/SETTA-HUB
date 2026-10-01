@@ -139,22 +139,59 @@ def data_uri(uploaded_file, max_mb=4):
 def normalize_favicon_image(image):
     image = image.convert("RGBA")
 
-    # Recorta margens transparentes para o símbolo ocupar melhor a aba do navegador.
-    alpha = image.getchannel("A")
-    bbox = alpha.getbbox()
-    if bbox:
-        image = image.crop(bbox)
+    # O favicon do Opera Hub usa somente o símbolo da marca em azul-marinho.
+    # A rotina abaixo também remove fundos brancos/transparentes para o símbolo
+    # ocupar praticamente toda a área útil da aba do navegador.
+    rgb = image.convert("RGB")
+    alpha_original = image.getchannel("A")
 
-    # Mantém uma margem mínima de segurança e gera fonte em alta resolução.
+    # Cria máscara de conteúdo: considera como fundo pixels quase brancos
+    # e preserva transparência já existente.
+    mask = Image.new("L", image.size, 0)
+    src_rgb = rgb.load()
+    src_alpha = alpha_original.load()
+    dst_mask = mask.load()
+
+    for y in range(image.height):
+        for x in range(image.width):
+            r, g, b = src_rgb[x, y]
+            a = src_alpha[x, y]
+
+            if a <= 8:
+                dst_mask[x, y] = 0
+                continue
+
+            # Distância do branco. Isso elimina as grandes margens brancas
+            # presentes em algumas versões do ícone.
+            distance_from_white = max(255 - r, 255 - g, 255 - b)
+            if distance_from_white <= 10:
+                dst_mask[x, y] = 0
+            else:
+                # Mantém antialias nas bordas.
+                derived_alpha = min(255, max(0, int((distance_from_white - 10) * 255 / 70)))
+                dst_mask[x, y] = min(a, derived_alpha)
+
+    bbox = mask.getbbox()
+    if bbox:
+        mask = mask.crop(bbox)
+
     target = 256
-    padding = 8
+    padding = 2
     max_content = target - (padding * 2)
-    image.thumbnail((max_content, max_content), Image.Resampling.LANCZOS)
+
+    if not bbox:
+        # Fallback seguro caso a imagem seja totalmente vazia.
+        return Image.new("RGBA", (target, target), (255, 255, 255, 0))
+
+    # Gera símbolo monocromático no NAVY oficial do Opera Hub.
+    navy = Image.new("RGBA", mask.size, (15, 27, 45, 255))
+    navy.putalpha(mask)
+    navy.thumbnail((max_content, max_content), Image.Resampling.LANCZOS)
 
     canvas = Image.new("RGBA", (target, target), (255, 255, 255, 0))
     canvas.alpha_composite(
-        image,
-        ((target - image.width) // 2, (target - image.height) // 2),
+        navy,
+        ((target - navy.width) // 2, (target - navy.height) // 2),
     )
     return canvas
 
@@ -343,7 +380,7 @@ with st.sidebar:
                 "Favicon / ícone do navegador",
                 type=["png", "jpg", "jpeg", "webp"],
                 key=f"fav{uv}",
-                help="Recomendado: imagem quadrada. O sistema recorta margens e gera PNG 256×256 para o símbolo aparecer maior na aba.",
+                help="O sistema remove margens brancas/transparentes, amplia o símbolo e aplica o azul-marinho oficial do Opera Hub.",
             )
             logo_footer_upload = st.file_uploader(
                 "Logo inferior",
