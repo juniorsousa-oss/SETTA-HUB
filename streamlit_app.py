@@ -637,22 +637,72 @@ button[data-testid="manage_app_button"],
 .hero-slogan{position:absolute;right:5%;bottom:18px;max-width:190px;color:white;text-shadow:0 1px 8px rgba(0,0,0,.35);font-size:clamp(11px,.75vw,13px);letter-spacing:1px;line-height:1.25;font-weight:800;z-index:2}
 .hero-slogan:after{content:"";display:block;width:34px;height:3px;background:var(--y2);margin-top:9px;border-radius:8px}
 
-.apps-wrap{width:100%;padding:clamp(8px,.8vw,12px) var(--page-pad) clamp(14px,1.3vw,22px);position:relative;z-index:5;flex:1 0 auto}
-.apps-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1vw,18px)}
-.app-card{position:relative;min-height:150px;display:flex;flex-direction:column;justify-content:space-between;text-decoration:none!important;color:inherit!important;background:radial-gradient(circle at 108% 112%,rgba(253,195,59,.13) 0 28%,transparent 29%),#fff;border:1px solid var(--line);border-radius:15px;padding:20px 22px 17px;box-shadow:0 6px 18px rgba(44,62,92,.045);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
-.app-card:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(44,62,92,.10);border-color:#D9DEE7}
-.card-content{display:grid;grid-template-columns:64px minmax(0,1fr);gap:16px;align-items:start;padding-right:90px}
-.app-icon{width:64px;height:64px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:#FFF7E2;overflow:hidden;flex:0 0 64px}
-.app-icon img{width:50px;height:50px;object-fit:contain}
-.app-icon-emoji{font-size:32px}
-.card-copy{min-width:0;padding-top:4px}
-.status{position:absolute;top:18px;right:20px;display:flex;align-items:center;gap:7px;background:#E9F9EF;color:#15883F;font-size:clamp(10px,.7vw,12px);font-weight:700;border-radius:999px;padding:6px 10px;white-space:nowrap}
-.dot{width:9px;height:9px;border-radius:50%;background:var(--green);flex:0 0 9px}
-.app-title{color:#111A36;font-weight:900;font-size:clamp(18px,1.08vw,21px);line-height:1.16}
-.app-desc{margin-top:5px;color:#71809B;font-size:clamp(12px,.78vw,14px);line-height:1.35;max-width:95%}
-.access{margin-top:14px;color:#F1A000;font-size:clamp(13px,.82vw,15px);font-weight:800;display:flex;align-items:center;gap:8px}
-.access-arrow{font-size:18px;line-height:1;transition:transform .18s ease}
-.app-card:hover .access-arrow{transform:translateX(3px)}
+.apps-wrap{
+  width:100%;
+  padding:clamp(24px,2.4vw,36px) var(--page-pad) clamp(24px,2.4vw,36px);
+  position:relative;
+  z-index:5;
+  flex:1 0 auto;
+  display:flex;
+  align-items:flex-start;
+}
+.apps-grid{
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(16px,1.35vw,22px);
+}
+.app-card{
+  position:relative;
+  min-height:180px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  text-decoration:none!important;
+  color:inherit!important;
+  background:radial-gradient(circle at 108% 112%,rgba(253,195,59,.11) 0 30%,transparent 31%),#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:24px 18px;
+  box-shadow:0 6px 18px rgba(44,62,92,.045);
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+}
+.app-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 26px rgba(44,62,92,.10);
+  border-color:#D9DEE7;
+}
+.card-content{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  width:100%;
+}
+.app-icon{
+  width:82px;
+  height:82px;
+  border-radius:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#FFF7E2;
+  overflow:hidden;
+  flex:0 0 82px;
+}
+.app-icon img{width:62px;height:62px;object-fit:contain}
+.app-icon-emoji{font-size:38px}
+.card-copy{min-width:0}
+.app-title{
+  color:#111A36;
+  font-weight:850;
+  font-size:clamp(15px,.95vw,18px);
+  line-height:1.2;
+  text-align:center;
+}
+.status,.dot,.app-desc,.access,.access-arrow{display:none!important}
 
 .page-footer{min-height:40px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 var(--page-pad);background:#fff;color:#97A2B8;font-size:clamp(8px,.58vw,10px);letter-spacing:1.8px;text-transform:uppercase;margin-top:auto}
 .footer-brand{display:flex;align-items:center;gap:10px;min-width:0}
@@ -671,22 +721,12 @@ button[data-testid="manage_app_button"],
   .user-badge{width:30px;height:30px;flex-basis:30px}
   .user-badge svg{width:17px;height:17px;min-width:17px;min-height:17px}
   .user{font-size:12px}
-  .hero{padding-top:18px;padding-bottom:12px}
-  .hero-image{height:178px;min-height:178px}
-  .hero h1{font-size:36px}
-  .hero h2{font-size:20px}
-  .hero p{font-size:12px;margin-top:10px}
-  .hero-accent{margin-top:12px;height:3px}
-  .apps-wrap{padding-top:6px;padding-bottom:10px}
-  .apps-grid{gap:12px}
-  .app-card{min-height:140px;padding:16px 18px 14px}
-  .card-content{grid-template-columns:58px minmax(0,1fr);gap:13px;padding-right:82px}
-  .app-icon{width:58px;height:58px;flex-basis:58px}
-  .app-icon img{width:46px;height:46px}
-  .app-title{font-size:18px}
-  .app-desc{font-size:12px}
-  .status{top:15px;right:16px;padding:5px 9px}
-  .access{margin-top:10px;font-size:13px}
+  .apps-wrap{padding-top:22px;padding-bottom:20px}
+  .apps-grid{gap:14px}
+  .app-card{min-height:155px;padding:18px 14px}
+  .app-icon{width:68px;height:68px;flex-basis:68px}
+  .app-icon img{width:52px;height:52px}
+  .app-title{font-size:15px}
   .page-footer{min-height:34px}
   .footer-logo-slot{height:20px}
   .footer-logo{height:20px}
@@ -695,19 +735,10 @@ button[data-testid="manage_app_button"],
 @media (max-width:1320px){
   :root{--page-pad:clamp(20px,3vw,42px)}
   .user{right:165px}
-  .hero{grid-template-columns:minmax(0,.95fr) minmax(380px,1.05fr);gap:22px}
-  .app-card{padding-left:18px;padding-right:18px}
-  .card-content{padding-right:78px}
 }
-@media (max-width:1120px){
+@media (max-width:920px){
   .apps-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .user{display:none}
-  .hero{grid-template-columns:1fr 1fr}
-  .hero h1{font-size:36px}
-}
-@media (max-width:820px){
-  .hero{grid-template-columns:1fr;gap:18px}
-  .hero-image{height:190px}
 }
 @media (max-width:760px){
   header[data-testid="stHeader"]{height:62px!important}
@@ -716,18 +747,20 @@ button[data-testid="manage_app_button"],
   .brand-slot{width:145px;height:48px}
   .brand-logo{width:145px;height:44px}
   .brand-text{font-size:34px}
-  .hero{grid-template-columns:1fr;padding:28px 20px 16px}
-  .hero h1{font-size:32px}
-  .hero h2{font-size:19px}
-  .hero-image{height:180px;min-height:180px}
-  .apps-wrap{padding:12px 18px 18px}
-  .apps-grid{grid-template-columns:1fr}
-  .app-card{min-height:145px;padding:18px}
-  .card-content{grid-template-columns:60px minmax(0,1fr);padding-right:70px}
-  .app-icon{width:60px;height:60px;flex-basis:60px}
-  .app-icon img{width:48px;height:48px}
+  .apps-wrap{padding:18px 16px 20px}
+  .apps-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .app-card{min-height:138px;padding:16px 10px;border-radius:15px}
+  .card-content{gap:10px}
+  .app-icon{width:62px;height:62px;flex-basis:62px;border-radius:16px}
+  .app-icon img{width:46px;height:46px}
+  .app-icon-emoji{font-size:31px}
+  .app-title{font-size:13px}
   .page-footer{flex-direction:column;gap:8px;padding:10px 18px;text-align:center}
   .footer-brand{justify-content:center;flex-wrap:wrap}
+}
+@media (max-width:420px){
+  .apps-grid{grid-template-columns:1fr}
+  .app-card{min-height:132px}
 }
 </style>'''
 
@@ -763,19 +796,14 @@ for app in cfg["apps"]:
         f'<a class="app-card" href="{esc(safe_url(app.get("url", "#")))}" target="_blank" rel="noopener noreferrer">'
         f'<div class="card-content">'
         f'<div class="app-icon">{icon_html(app)}</div>'
-        f'<div class="card-copy"><div class="app-title">{esc(app.get("nome", "Aplicativo"))}</div>'
-        f'<div class="app-desc">{esc(app.get("descricao", ""))}</div></div></div>'
-        f'<div class="status"><span class="dot"></span>{esc(app.get("status", "Ativo"))}</div>'
-        f'<div class="access">Acessar <span class="access-arrow">→</span></div></a>'
+        f'<div class="card-copy"><div class="app-title">{esc(app.get("nome", "Aplicativo"))}</div></div>'
+        f'</div></a>'
     )
 
 page = (
     f'<div class="hub-header-content"><div class="brand-slot">{logo_top}</div>'
     f'<div class="user"><div class="user-badge">{user_avatar_html}</div><span>{esc(cfg["usuario"])}</span></div></div>'
-    f'<div class="page-root"><section class="hero"><div class="hero-copy">'
-    f'<div class="hero-eyebrow">BEM-VINDO(A) AO</div>'
-    f'<h1>{esc(cfg["titulo"])}</h1><h2>{esc(cfg["subtitulo"])}</h2>'
-    f'<p>{esc(cfg["descricao"]).replace(chr(10), "<br>")}</p><div class="hero-accent"></div></div></section>'
+    f'<div class="page-root">'
     f'<div class="apps-wrap"><div class="apps-grid">{cards}</div></div>'
     f'<div class="page-footer"><div class="footer-brand"><div class="footer-logo-slot">{logo_footer}</div>'
     f'<span>|</span><span>{esc(cfg["rodape_esquerdo"])}</span></div>'
