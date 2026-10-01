@@ -629,7 +629,7 @@ button[data-testid="manage_app_button"],
 
 .apps-wrap{
   width:100%;
-  padding:clamp(10px,1vw,16px) var(--page-pad) clamp(12px,1vw,16px);
+  padding:clamp(12px,1.2vw,18px) var(--page-pad) clamp(14px,1.2vw,18px);
   position:relative;
   z-index:5;
   flex:1 1 auto;
@@ -641,14 +641,15 @@ button[data-testid="manage_app_button"],
   flex:1 1 auto;
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
-  grid-template-rows:repeat(3,minmax(0,1fr));
+  grid-auto-rows:minmax(150px,165px);
+  align-content:space-between;
   gap:clamp(12px,1vw,18px);
   min-height:0;
 }
 .app-card{
   position:relative;
   min-height:150px;
-  height:100%;
+  height:auto;
   display:flex;
   flex-direction:column;
   justify-content:space-between;
@@ -671,8 +672,9 @@ button[data-testid="manage_app_button"],
   display:grid;
   grid-template-columns:64px minmax(0,1fr);
   gap:16px;
-  align-items:start;
+  align-items:center;
   padding-right:90px;
+  min-height:68px;
 }
 .app-icon{
   width:64px;
@@ -706,7 +708,7 @@ button[data-testid="manage_app_button"],
 .dot{width:9px;height:9px;border-radius:50%;background:var(--green);flex:0 0 9px}
 .app-title{color:#111A36;font-weight:900;font-size:clamp(18px,1.08vw,21px);line-height:1.16}
 .app-desc{margin-top:5px;color:#71809B;font-size:clamp(12px,.78vw,14px);line-height:1.35;max-width:95%}
-.access{margin-top:14px;color:#F1A000;font-size:clamp(13px,.82vw,15px);font-weight:800;display:flex;align-items:center;gap:8px}
+.access{margin-top:12px;padding-top:12px;border-top:1px solid rgba(231,235,241,.9);color:#F1A000;font-size:clamp(13px,.82vw,15px);font-weight:800;display:flex;align-items:center;gap:8px}
 .access-arrow{font-size:18px;line-height:1;transition:transform .18s ease}
 .app-card:hover .access-arrow{transform:translateX(3px)}
 
@@ -727,9 +729,9 @@ button[data-testid="manage_app_button"],
   .user-badge{width:30px;height:30px;flex-basis:30px}
   .user-badge svg{width:17px;height:17px;min-width:17px;min-height:17px}
   .user{font-size:12px}
-  .apps-wrap{padding-top:8px;padding-bottom:10px}
-  .apps-grid{gap:12px}
-  .app-card{min-height:140px;padding:16px 18px 14px}
+  .apps-wrap{padding-top:10px;padding-bottom:12px}
+  .apps-grid{grid-auto-rows:minmax(138px,150px);align-content:space-between;gap:12px}
+  .app-card{min-height:138px;padding:16px 18px 14px}
   .card-content{grid-template-columns:58px minmax(0,1fr);gap:13px;padding-right:82px}
   .app-icon{width:58px;height:58px;flex-basis:58px}
   .app-icon img{width:46px;height:46px}
@@ -752,6 +754,8 @@ button[data-testid="manage_app_button"],
     display:grid;
     grid-template-columns:repeat(2,minmax(0,1fr));
     grid-template-rows:none;
+    grid-auto-rows:auto;
+    align-content:start;
   }
   .app-card{height:auto}
   .user{display:none}
@@ -764,7 +768,7 @@ button[data-testid="manage_app_button"],
   .brand-logo{width:145px;height:44px}
   .brand-text{font-size:34px}
   .apps-wrap{padding:12px 18px 18px;display:block}
-  .apps-grid{grid-template-columns:1fr;grid-template-rows:none;gap:12px}
+  .apps-grid{grid-template-columns:1fr;grid-template-rows:none;grid-auto-rows:auto;align-content:start;gap:12px}
   .app-card{min-height:145px;height:auto;padding:18px}
   .card-content{grid-template-columns:60px minmax(0,1fr);padding-right:70px;gap:14px}
   .app-icon{width:60px;height:60px;flex-basis:60px;border-radius:14px}
