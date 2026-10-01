@@ -629,19 +629,26 @@ button[data-testid="manage_app_button"],
 
 .apps-wrap{
   width:100%;
-  padding:clamp(10px,1vw,16px) var(--page-pad) clamp(14px,1.3vw,22px);
+  padding:clamp(10px,1vw,16px) var(--page-pad) clamp(12px,1vw,16px);
   position:relative;
   z-index:5;
-  flex:1 0 auto;
+  flex:1 1 auto;
+  display:flex;
+  min-height:0;
 }
 .apps-grid{
+  width:100%;
+  flex:1 1 auto;
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-template-rows:repeat(3,minmax(0,1fr));
   gap:clamp(12px,1vw,18px);
+  min-height:0;
 }
 .app-card{
   position:relative;
   min-height:150px;
+  height:100%;
   display:flex;
   flex-direction:column;
   justify-content:space-between;
@@ -740,7 +747,13 @@ button[data-testid="manage_app_button"],
   .user{right:165px}
 }
 @media (max-width:1120px){
-  .apps-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .apps-wrap{display:block}
+  .apps-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    grid-template-rows:none;
+  }
+  .app-card{height:auto}
   .user{display:none}
 }
 @media (max-width:760px){
@@ -750,9 +763,9 @@ button[data-testid="manage_app_button"],
   .brand-slot{width:145px;height:48px}
   .brand-logo{width:145px;height:44px}
   .brand-text{font-size:34px}
-  .apps-wrap{padding:12px 18px 18px}
-  .apps-grid{grid-template-columns:1fr;gap:12px}
-  .app-card{min-height:145px;padding:18px}
+  .apps-wrap{padding:12px 18px 18px;display:block}
+  .apps-grid{grid-template-columns:1fr;grid-template-rows:none;gap:12px}
+  .app-card{min-height:145px;height:auto;padding:18px}
   .card-content{grid-template-columns:60px minmax(0,1fr);padding-right:70px;gap:14px}
   .app-icon{width:60px;height:60px;flex-basis:60px;border-radius:14px}
   .app-icon img{width:48px;height:48px}
