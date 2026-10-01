@@ -641,9 +641,9 @@ button[data-testid="manage_app_button"],
   flex:1 1 auto;
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
-  grid-auto-rows:minmax(150px,165px);
-  align-content:space-between;
-  gap:clamp(12px,1vw,18px);
+  grid-auto-rows:clamp(170px,22vh,205px);
+  align-content:center;
+  gap:clamp(14px,1.1vw,18px);
   min-height:0;
 }
 .app-card{
@@ -652,7 +652,7 @@ button[data-testid="manage_app_button"],
   height:auto;
   display:flex;
   flex-direction:column;
-  justify-content:space-between;
+  justify-content:flex-start;
   text-align:left;
   text-decoration:none!important;
   color:inherit!important;
@@ -708,7 +708,7 @@ button[data-testid="manage_app_button"],
 .dot{width:9px;height:9px;border-radius:50%;background:var(--green);flex:0 0 9px}
 .app-title{color:#111A36;font-weight:900;font-size:clamp(18px,1.08vw,21px);line-height:1.16}
 .app-desc{margin-top:5px;color:#71809B;font-size:clamp(12px,.78vw,14px);line-height:1.35;max-width:95%}
-.access{margin-top:12px;padding-top:12px;border-top:1px solid rgba(231,235,241,.9);color:#F1A000;font-size:clamp(13px,.82vw,15px);font-weight:800;display:flex;align-items:center;gap:8px}
+.access{margin-top:auto;padding-top:12px;border-top:1px solid rgba(231,235,241,.9);color:#F1A000;font-size:clamp(13px,.82vw,15px);font-weight:800;display:flex;align-items:center;gap:8px}
 .access-arrow{font-size:18px;line-height:1;transition:transform .18s ease}
 .app-card:hover .access-arrow{transform:translateX(3px)}
 
@@ -730,8 +730,8 @@ button[data-testid="manage_app_button"],
   .user-badge svg{width:17px;height:17px;min-width:17px;min-height:17px}
   .user{font-size:12px}
   .apps-wrap{padding-top:10px;padding-bottom:12px}
-  .apps-grid{grid-auto-rows:minmax(138px,150px);align-content:space-between;gap:12px}
-  .app-card{min-height:138px;padding:16px 18px 14px}
+  .apps-grid{grid-auto-rows:clamp(150px,20vh,172px);align-content:center;gap:14px}
+  .app-card{min-height:150px;padding:17px 18px 15px}
   .card-content{grid-template-columns:58px minmax(0,1fr);gap:13px;padding-right:82px}
   .app-icon{width:58px;height:58px;flex-basis:58px}
   .app-icon img{width:46px;height:46px}
