@@ -136,20 +136,39 @@ def data_uri(uploaded_file, max_mb=4):
     return f"data:{mime};base64,{base64.b64encode(uploaded_file.getvalue()).decode()}"
 
 
+def normalize_favicon_image(image):
+    image = image.convert("RGBA")
+
+    # Recorta margens transparentes para o símbolo ocupar melhor a aba do navegador.
+    alpha = image.getchannel("A")
+    bbox = alpha.getbbox()
+    if bbox:
+        image = image.crop(bbox)
+
+    # Mantém uma margem mínima de segurança e gera fonte em alta resolução.
+    target = 256
+    padding = 8
+    max_content = target - (padding * 2)
+    image.thumbnail((max_content, max_content), Image.Resampling.LANCZOS)
+
+    canvas = Image.new("RGBA", (target, target), (255, 255, 255, 0))
+    canvas.alpha_composite(
+        image,
+        ((target - image.width) // 2, (target - image.height) // 2),
+    )
+    return canvas
+
+
 def favicon_png(uploaded_file):
     if uploaded_file is None:
         return ""
     if uploaded_file.size > 2 * 1024 * 1024:
         raise ValueError("Favicon acima de 2 MB.")
 
-    image = Image.open(BytesIO(uploaded_file.getvalue())).convert("RGBA")
-    side = max(image.width, image.height)
-    canvas = Image.new("RGBA", (side, side), (255, 255, 255, 0))
-    canvas.alpha_composite(image, ((side - image.width) // 2, (side - image.height) // 2))
-    canvas = canvas.resize((128, 128), Image.Resampling.LANCZOS)
+    image = normalize_favicon_image(Image.open(BytesIO(uploaded_file.getvalue())))
 
     output = BytesIO()
-    canvas.save(output, "PNG", optimize=True)
+    image.save(output, "PNG", optimize=True)
     return "data:image/png;base64," + base64.b64encode(output.getvalue()).decode()
 
 
@@ -158,10 +177,11 @@ def page_icon_from_config(cfg):
     if data.startswith("data:image/") and "," in data:
         try:
             encoded = data.split(",", 1)[1]
-            return Image.open(BytesIO(base64.b64decode(encoded))).convert("RGBA")
+            image = Image.open(BytesIO(base64.b64decode(encoded)))
+            return normalize_favicon_image(image)
         except Exception:
             pass
-    return Image.open("favicon.png.png")
+    return normalize_favicon_image(Image.open("favicon.png.png"))
 
 
 def icon_png(uploaded_file):
@@ -313,9 +333,9 @@ with st.sidebar:
             )
             logo_top_width = st.slider(
                 "Tamanho da logo no cabeçalho",
-                min_value=80,
-                max_value=300,
-                value=max(80, min(300, int(cfg.get("logo_top_width", 170) or 170))),
+                min_value=100,
+                max_value=360,
+                value=max(100, min(360, 230 if int(cfg.get("logo_top_width", 170) or 170) == 170 else int(cfg.get("logo_top_width", 230) or 230))),
                 step=5,
                 help="Ajusta a largura da logo no cabeçalho sem deformar a imagem.",
             )
@@ -323,7 +343,7 @@ with st.sidebar:
                 "Favicon / ícone do navegador",
                 type=["png", "jpg", "jpeg", "webp"],
                 key=f"fav{uv}",
-                help="Recomendado: imagem quadrada. O sistema converte automaticamente para PNG 128×128.",
+                help="Recomendado: imagem quadrada. O sistema recorta margens e gera PNG 256×256 para o símbolo aparecer maior na aba.",
             )
             logo_footer_upload = st.file_uploader(
                 "Logo inferior",
@@ -842,18 +862,40 @@ button[data-testid="manage_app_button"],
 }
 </style>'''
 
-logo_top_width = max(80, min(300, int(cfg.get("logo_top_width", 170) or 170)))
-logo_top_mobile_width = min(180, logo_top_width)
+logo_top_width_raw = int(cfg.get("logo_top_width", 230) or 230)
+logo_top_width = 230 if logo_top_width_raw == 170 else max(100, min(360, logo_top_width_raw))
+logo_top_mobile_width = min(215, logo_top_width)
 BRAND_SIZE_CSS = f"""<style>
-.brand-slot{{width:{logo_top_width}px;max-width:{logo_top_width}px}}
-.brand-logo{{width:{logo_top_width}px;max-width:{logo_top_width}px;height:52px;max-height:52px}}
+.brand-slot{{width:{logo_top_width}px;max-width:{logo_top_width}px;overflow:visible}}
+.brand-logo{{
+  width:{logo_top_width}px;
+  max-width:{logo_top_width}px;
+  height:56px;
+  max-height:56px;
+  transform:scale(1.18);
+  transform-origin:left center;
+}}
 @media (min-width:1200px) and (max-height:900px){{
-  .brand-slot{{width:{logo_top_width}px;max-width:{logo_top_width}px}}
-  .brand-logo{{width:{logo_top_width}px;max-width:{logo_top_width}px;height:46px;max-height:46px}}
+  .brand-slot{{width:{logo_top_width}px;max-width:{logo_top_width}px;overflow:visible}}
+  .brand-logo{{
+    width:{logo_top_width}px;
+    max-width:{logo_top_width}px;
+    height:52px;
+    max-height:52px;
+    transform:scale(1.16);
+    transform-origin:left center;
+  }}
 }}
 @media (max-width:760px){{
-  .brand-slot{{width:{logo_top_mobile_width}px;max-width:{logo_top_mobile_width}px}}
-  .brand-logo{{width:{logo_top_mobile_width}px;max-width:{logo_top_mobile_width}px;height:44px;max-height:44px}}
+  .brand-slot{{width:{logo_top_mobile_width}px;max-width:{logo_top_mobile_width}px;overflow:visible}}
+  .brand-logo{{
+    width:{logo_top_mobile_width}px;
+    max-width:{logo_top_mobile_width}px;
+    height:48px;
+    max-height:48px;
+    transform:scale(1.12);
+    transform-origin:left center;
+  }}
 }}
 </style>"""
 
