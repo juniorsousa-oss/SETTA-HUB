@@ -11,15 +11,6 @@ import requests
 import streamlit as st
 from PIL import Image
 
-favicon = Image.open("favicon.png.png")
-
-st.set_page_config(
-    page_title="OPERA HUB | SETTA",
-    page_icon=favicon,
-    layout="wide",
-    initial_sidebar_state="collapsed",
-)
-
 SB_URL = "https://cuixazpxkvniqldmmnth.supabase.co"
 SB_KEY = "sb_publishable_ZTqIgmA9Ez6AVQsoXa0P8Q_6CYHDFye"
 SB_TABLE = "setta_hub_config"
@@ -27,6 +18,8 @@ SB_ID = "main"
 
 DEFAULT_CONFIG = {
     "logo_top": "",
+    "logo_top_width": 170,
+    "favicon": "",
     "logo_footer": "",
     "hero_image": "https://gruposetta.com.br/wp-content/uploads/2026/03/entradaG9.jpg-2-1-scaled-e1774901671839.png",
     "titulo": "CENTRAL DE APLICATIVOS",
@@ -68,6 +61,8 @@ def merge_config(saved):
 
     for key in (
         "logo_top",
+        "logo_top_width",
+        "favicon",
         "logo_footer",
         "hero_image",
         "titulo",
@@ -141,6 +136,34 @@ def data_uri(uploaded_file, max_mb=4):
     return f"data:{mime};base64,{base64.b64encode(uploaded_file.getvalue()).decode()}"
 
 
+def favicon_png(uploaded_file):
+    if uploaded_file is None:
+        return ""
+    if uploaded_file.size > 2 * 1024 * 1024:
+        raise ValueError("Favicon acima de 2 MB.")
+
+    image = Image.open(BytesIO(uploaded_file.getvalue())).convert("RGBA")
+    side = max(image.width, image.height)
+    canvas = Image.new("RGBA", (side, side), (255, 255, 255, 0))
+    canvas.alpha_composite(image, ((side - image.width) // 2, (side - image.height) // 2))
+    canvas = canvas.resize((128, 128), Image.Resampling.LANCZOS)
+
+    output = BytesIO()
+    canvas.save(output, "PNG", optimize=True)
+    return "data:image/png;base64," + base64.b64encode(output.getvalue()).decode()
+
+
+def page_icon_from_config(cfg):
+    data = str(cfg.get("favicon") or "")
+    if data.startswith("data:image/") and "," in data:
+        try:
+            encoded = data.split(",", 1)[1]
+            return Image.open(BytesIO(base64.b64decode(encoded))).convert("RGBA")
+        except Exception:
+            pass
+    return Image.open("favicon.png.png")
+
+
 def icon_png(uploaded_file):
     if uploaded_file is None:
         return ""
@@ -200,13 +223,23 @@ def admin_password_valid(password):
     return hmac.compare_digest(digest, ADMIN_PASSWORD_FALLBACK_HASH)
 
 
+try:
+    boot_config = load_db()
+    boot_db_ok = True
+except Exception:
+    boot_config = copy.deepcopy(DEFAULT_CONFIG)
+    boot_db_ok = False
+
+st.set_page_config(
+    page_title="OPERA HUB | SETTA",
+    page_icon=page_icon_from_config(boot_config),
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
+
 if "hub_config" not in st.session_state:
-    try:
-        st.session_state.hub_config = load_db()
-        st.session_state.db_ok = True
-    except Exception:
-        st.session_state.hub_config = copy.deepcopy(DEFAULT_CONFIG)
-        st.session_state.db_ok = False
+    st.session_state.hub_config = boot_config
+    st.session_state.db_ok = boot_db_ok
 
 if "uv" not in st.session_state:
     st.session_state.uv = 0
@@ -278,6 +311,20 @@ with st.sidebar:
                 key=f"lt{uv}",
                 help="Ajuste automático sem deformar.",
             )
+            logo_top_width = st.slider(
+                "Tamanho da logo no cabeçalho",
+                min_value=80,
+                max_value=300,
+                value=max(80, min(300, int(cfg.get("logo_top_width", 170) or 170))),
+                step=5,
+                help="Ajusta a largura da logo no cabeçalho sem deformar a imagem.",
+            )
+            favicon_upload = st.file_uploader(
+                "Favicon / ícone do navegador",
+                type=["png", "jpg", "jpeg", "webp"],
+                key=f"fav{uv}",
+                help="Recomendado: imagem quadrada. O sistema converte automaticamente para PNG 128×128.",
+            )
             logo_footer_upload = st.file_uploader(
                 "Logo inferior",
                 type=["png", "jpg", "jpeg", "webp"],
@@ -296,13 +343,18 @@ with st.sidebar:
             )
 
             clear_top = st.checkbox("Remover logo superior e usar texto Setta")
+            clear_favicon = st.checkbox("Usar favicon padrão")
             clear_footer = st.checkbox("Usar logo inferior padrão")
             clear_hero = st.checkbox("Usar imagem principal padrão")
             clear_user_avatar = st.checkbox("Remover imagem do usuário e usar ícone padrão")
 
             if cfg.get("logo_top"):
                 st.caption("Logo superior atual")
-                st.image(cfg["logo_top"], width=150)
+                st.image(cfg["logo_top"], width=min(220, int(cfg.get("logo_top_width", 170) or 170)))
+
+            if cfg.get("favicon"):
+                st.caption("Favicon atual")
+                st.image(cfg["favicon"], width=48)
 
             if cfg.get("user_avatar"):
                 st.caption("Imagem atual do usuário")
@@ -367,6 +419,13 @@ with st.sidebar:
                     new_cfg["logo_top"] = ""
                 elif logo_top_upload:
                     new_cfg["logo_top"] = data_uri(logo_top_upload, 3)
+
+                new_cfg["logo_top_width"] = int(logo_top_width)
+
+                if clear_favicon:
+                    new_cfg["favicon"] = ""
+                elif favicon_upload:
+                    new_cfg["favicon"] = favicon_png(favicon_upload)
 
                 if clear_footer:
                     new_cfg["logo_footer"] = ""
@@ -783,7 +842,22 @@ button[data-testid="manage_app_button"],
 }
 </style>'''
 
-st.html(CSS)
+logo_top_width = max(80, min(300, int(cfg.get("logo_top_width", 170) or 170)))
+logo_top_mobile_width = min(180, logo_top_width)
+BRAND_SIZE_CSS = f"""<style>
+.brand-slot{{width:{logo_top_width}px;max-width:{logo_top_width}px}}
+.brand-logo{{width:{logo_top_width}px;max-width:{logo_top_width}px;height:52px;max-height:52px}}
+@media (min-width:1200px) and (max-height:900px){{
+  .brand-slot{{width:{logo_top_width}px;max-width:{logo_top_width}px}}
+  .brand-logo{{width:{logo_top_width}px;max-width:{logo_top_width}px;height:46px;max-height:46px}}
+}}
+@media (max-width:760px){{
+  .brand-slot{{width:{logo_top_mobile_width}px;max-width:{logo_top_mobile_width}px}}
+  .brand-logo{{width:{logo_top_mobile_width}px;max-width:{logo_top_mobile_width}px;height:44px;max-height:44px}}
+}}
+</style>"""
+
+st.html(CSS + BRAND_SIZE_CSS)
 
 logo_top = (
     f'<img class="brand-logo" src="{cfg["logo_top"]}" alt="Logo">'
