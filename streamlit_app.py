@@ -618,28 +618,18 @@ button[data-testid="manage_app_button"],
   color:#13203B!important;
 }
 
-.hero{
-  display:grid;
-  grid-template-columns:minmax(0,.95fr) minmax(420px,1.05fr);
-  gap:clamp(24px,2.2vw,40px);
-  padding:clamp(22px,2.4vw,34px) var(--page-pad) clamp(16px,1.8vw,26px);
-  background:#fff;
-  align-items:center;
+.hero,.hero-copy,.hero-eyebrow,.hero-image,.hero-slogan{
+  display:none!important;
+  height:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
 }
-.hero-copy{padding:0;background:transparent;align-self:center}
-.hero-eyebrow{margin-bottom:8px;color:#73809B;font-size:clamp(10px,.66vw,12px);font-weight:800;letter-spacing:4px;text-transform:uppercase}
-.hero h1{margin:0;color:var(--ink);font-size:clamp(34px,2.55vw,46px);line-height:1.02;letter-spacing:-2px;font-weight:900}
-.hero h2{margin:7px 0 0;color:#66728B;font-size:clamp(19px,1.42vw,25px);line-height:1.2;font-weight:500}
-.hero p{margin:clamp(12px,1vw,16px) 0 0;color:#73809B;font-size:clamp(12px,.84vw,14px);line-height:1.55;max-width:560px}
-.hero-accent{width:64px;height:4px;background:var(--y2);border-radius:10px;margin-top:16px}
-.hero-image{height:clamp(185px,21vh,225px);min-height:185px;background-size:cover;background-position:center 48%;position:relative;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(27,41,68,.08)}
-.hero-image:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 48%,rgba(9,21,45,.08) 100%);pointer-events:none}
-.hero-slogan{position:absolute;right:5%;bottom:18px;max-width:190px;color:white;text-shadow:0 1px 8px rgba(0,0,0,.35);font-size:clamp(11px,.75vw,13px);letter-spacing:1px;line-height:1.25;font-weight:800;z-index:2}
-.hero-slogan:after{content:"";display:block;width:34px;height:3px;background:var(--y2);margin-top:9px;border-radius:8px}
 
 .apps-wrap{
   width:100%;
-  padding:clamp(24px,2.4vw,36px) var(--page-pad) clamp(24px,2.4vw,36px);
+  padding:clamp(12px,1.2vw,18px) var(--page-pad) clamp(24px,2.4vw,36px);
   position:relative;
   z-index:5;
   flex:1 0 auto;
@@ -721,7 +711,7 @@ button[data-testid="manage_app_button"],
   .user-badge{width:30px;height:30px;flex-basis:30px}
   .user-badge svg{width:17px;height:17px;min-width:17px;min-height:17px}
   .user{font-size:12px}
-  .apps-wrap{padding-top:22px;padding-bottom:20px}
+  .apps-wrap{padding-top:10px;padding-bottom:20px}
   .apps-grid{gap:14px}
   .app-card{min-height:155px;padding:18px 14px}
   .app-icon{width:68px;height:68px;flex-basis:68px}
