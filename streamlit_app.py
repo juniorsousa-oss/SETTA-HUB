@@ -573,7 +573,7 @@ header[data-testid="stHeader"]{
   background:var(--y)!important;
   height:64px!important;
   border-bottom:1px solid rgba(0,0,0,.06)!important;
-  z-index:100000!important;
+  z-index:100020!important;
 }
 header[data-testid="stHeader"] *{color:var(--ink)!important}
 [data-testid="stToolbar"]{background:transparent!important}
@@ -596,8 +596,21 @@ span[data-testid="stMainMenu"] svg{
 .stToolbarActions > .stToolbarActionButton:first-child{
   display:none!important;
 }
-[data-testid="stSidebar"]{border-right:1px solid var(--line)!important;background:#fff!important;z-index:100005!important}
-[data-testid="stSidebar"]>div:first-child{background:#fff!important}
+/* Mantém o cabeçalho superior sempre visível, inclusive com a sidebar aberta. */
+[data-testid="stSidebar"]{
+  top:64px!important;
+  height:calc(100dvh - 64px)!important;
+  max-height:calc(100dvh - 64px)!important;
+  border-right:1px solid var(--line)!important;
+  background:#fff!important;
+  z-index:100010!important;
+}
+[data-testid="stSidebar"]>div:first-child{
+  height:100%!important;
+  max-height:100%!important;
+  background:#fff!important;
+  overflow-y:auto!important;
+}
 .block-container{max-width:100%!important;padding:0!important;margin:0!important}
 
 .hub-header-content{
@@ -611,7 +624,7 @@ span[data-testid="stMainMenu"] svg{
   display:flex;
   align-items:center;
   padding:0 0 0 clamp(62px,4vw,78px);
-  z-index:100002;
+  z-index:100022;
   pointer-events:none;
 }
 
@@ -837,6 +850,7 @@ button[data-testid="manage_app_button"],
 
 @media (min-width:1200px) and (max-height:900px){
   header[data-testid="stHeader"]{height:58px!important}
+  [data-testid="stSidebar"]{top:58px!important;height:calc(100dvh - 58px)!important;max-height:calc(100dvh - 58px)!important}
   .hub-header-content{height:58px}
   .page-root{padding-top:58px}
   .brand-slot{height:46px}
@@ -878,6 +892,7 @@ button[data-testid="manage_app_button"],
 }
 @media (max-width:760px){
   header[data-testid="stHeader"]{height:62px!important}
+  [data-testid="stSidebar"]{top:62px!important;height:calc(100dvh - 62px)!important;max-height:calc(100dvh - 62px)!important}
   .hub-header-content{height:62px;padding:0 20px 0 62px}
   .page-root{padding-top:62px;min-height:100dvh}
   .brand-slot{width:145px;height:48px}
